@@ -10,16 +10,14 @@ class UTILISATEUR
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(name: "Id_Uti")]
+    private ?int $id = null;
 
     #[ORM\OneToOne(mappedBy: 'Id_Uti', cascade: ['persist', 'remove'])]
     private ?PRODUCTEUR $producteur = null;
 
     #[ORM\OneToOne(mappedBy: 'Id_Uti', cascade: ['persist', 'remove'])]
     private ?ADMINISTRATEUR $administrateur = null;
-
-
-    private ?int $id = null;
 
     #[ORM\Column(length: 50)]
     private ?string $Prenom_Uti = null;
