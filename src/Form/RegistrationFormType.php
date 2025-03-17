@@ -15,11 +15,21 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('Prenom_Uti')
-            ->add('Nom_Uti')
-            ->add('Mail_Uti')
-            ->add('Adr_Uti')
-            ->add('password')
+            ->add('Prenom_Uti', null, [
+                'label' => 'Prénom',
+                ])
+            ->add('Nom_Uti', null, [
+                'label' => 'Nom',
+            ])
+            ->add('Mail_Uti', null, [
+                'label' => 'Email',
+            ])
+            ->add('Adr_Uti', null, [
+                'label' => 'Adresse',
+            ])
+            ->add('password', null, [
+                'label' => 'Mot de passe',
+            ])
 //            ->add('producteur', EntityType::class, [
 //                'class' => PRODUCTEUR::class,
 //                'choice_label' => 'id',

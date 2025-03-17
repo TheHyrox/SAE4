@@ -11,6 +11,14 @@
 
     {{ form_errors(registrationForm) }}
 
-    {{ form(registrationForm) }}
+    {{ form_start(registrationForm) }}
+    {{ form_row(registrationForm.Nom_Uti) }}
+    {{ form_row(registrationForm.Prenom_Uti) }}
+    {{ form_row(registrationForm.Mail_Uti) }}
+    {{ form_row(registrationForm.Adr_Uti) }}
+    {{ form_row(registrationForm.password) }}
+
+    <button type="submit" class="btn">Register</button>
+    {{ form_end(registrationForm) }}
 
 {% endblock %}
