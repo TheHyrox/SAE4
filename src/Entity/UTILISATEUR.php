@@ -33,8 +33,17 @@ class UTILISATEUR implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 200)]
     private ?string $Adr_Uti = null;
 
+    /**
+     * @var string The hashed password
+     */
     #[ORM\Column(length: 50)]
-    private ?string $Pwd_Uti = null;
+    private string $Pwd_Uti = '';
+
+    /**
+     * @var list<string> The user roles
+     */
+    #[ORM\Column]
+    private array $roles = [];
 
     public function getId(): ?int
     {
