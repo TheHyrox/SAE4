@@ -15,65 +15,64 @@
     </head>
     <body>
 
-        <nav class="navbar navbar-expand-xl navbar-dark bg-dark">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="{{ path('app_home') }}">Mon Site</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample06" aria-controls="navbarsExample06" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-        
-                <div class="collapse navbar-collapse" id="navbarsExample06">
-                    <ul class="navbar-nav me-auto mb-2 mb-xl-0">
-                        {# Always visible #}
+<nav class="navbar navbar-expand-xl navbar-dark bg-dark">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample06" aria-controls="navbarsExample06" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsExample06">
+            <ul class="navbar-nav me-auto mb-2 mb-xl-0">
+                {# Always visible #}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('app_home') }}">Accueil</a>
+                </li>
+
+                {% if app.user %}
+                    {# Visible for all logged users #}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_messagerie') }}">Messagerie</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_achats') }}">Achats</a>
+                    </li>
+
+                    {# Check if user is a PRODUCTEUR #}
+                    {% if app.user.producteur is defined and app.user.producteur is not null %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_home') }}">Accueil</a>
+                            <a class="nav-link" href="{{ path('app_produits') }}">Produits</a>
                         </li>
-        
-                        {% if app.user %}
-                            {# Visible for all logged users #}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_messagerie') }}">Messagerie</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_achats') }}">Achats</a>
-                            </li>
-        
-                            {# Check if user is a PRODUCTEUR #}
-                            {% if app.user.producteur is defined and app.user.producteur is not null %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ path('app_produits') }}">Produits</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ path('app_commandes') }}">Commandes</a>
-                                </li>
-                            {% endif %}
-        
-                            {# Check if user is an ADMINISTRATEUR #}
-                            {% if app.user.administrateur is defined and app.user.administrateur is not null %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ path('admin_panel') }}">Panneau Administrateur</a>
-                                </li>
-                            {% endif %}
-                        {% endif %}
-                    </ul>
-        
-                    <ul class="navbar-nav">
-                        {% if app.user %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_logout') }}">Déconnexion</a>
-                            </li>
-                        {% else %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_login') }}">Connexion</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path('app_register') }}">Inscription</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </div>
-            </div>
-        </nav>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_commandes') }}">Commandes</a>
+                        </li>
+                    {% endif %}
+
+                    {# Check if user is an ADMINISTRATEUR #}
+                    {% if app.user.administrateur is defined and app.user.administrateur is not null %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('admin_panel') }}">Panneau Administrateur</a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+
+            <ul class="navbar-nav">
+                {% if app.user %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_logout') }}">Déconnexion</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_login') }}">Connexion</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_register') }}">Inscription</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
 
         {% block body %}{% endblock %}
     </body>
