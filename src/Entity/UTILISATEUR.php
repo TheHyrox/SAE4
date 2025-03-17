@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use App\Repository\UTILISATEURRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UTILISATEURRepository::class)]
-class UTILISATEUR
+class UTILISATEUR implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -87,12 +89,16 @@ class UTILISATEUR
         return $this;
     }
 
-    public function getPwdUti(): ?string
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+
+    public function getPassword(): ?string
     {
         return $this->Pwd_Uti;
     }
 
-    public function setPwdUti(string $Pwd_Uti): static
+    public function setPassword(string $Pwd_Uti): static
     {
         $this->Pwd_Uti = $Pwd_Uti;
 
@@ -120,4 +126,40 @@ class UTILISATEUR
         $this->administrateur = $administrateur;
         return $this;
     }
+
+    /**
+     * @param list<string> $roles
+     */
+
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    /**
+     * @see UserInterface
+     */
+
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->Mail_Uti;
+    }
+
 }
