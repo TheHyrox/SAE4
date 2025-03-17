@@ -20,14 +20,14 @@ class RegistrationFormType extends AbstractType
             ->add('Mail_Uti')
             ->add('Adr_Uti')
             ->add('password')
-            ->add('producteur', EntityType::class, [
-                'class' => PRODUCTEUR::class,
-                'choice_label' => 'id',
-            ])
-            ->add('administrateur', EntityType::class, [
-                'class' => ADMINISTRATEUR::class,
-                'choice_label' => 'id',
-            ])
+//            ->add('producteur', EntityType::class, [
+//                'class' => PRODUCTEUR::class,
+//                'choice_label' => 'id',
+//            ])
+//            ->add('administrateur', EntityType::class, [
+//                'class' => ADMINISTRATEUR::class,
+//                'choice_label' => 'id',
+//            ])
         ;
     }
 
