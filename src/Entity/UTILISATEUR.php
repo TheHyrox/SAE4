@@ -36,8 +36,8 @@ class UTILISATEUR implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string The hashed password
      */
-    #[ORM\Column(length: 50)]
-    private string $Pwd_Uti = '';
+    #[ORM\Column]
+    private ?string $password = null;
 
     /**
      * @var list<string> The user roles
@@ -104,12 +104,12 @@ class UTILISATEUR implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getPassword(): ?string
     {
-        return $this->Pwd_Uti;
+        return $this->password;
     }
 
     public function setPassword(string $Pwd_Uti): static
     {
-        $this->Pwd_Uti = $Pwd_Uti;
+        $this->password = $Pwd_Uti;
 
         return $this;
     }
