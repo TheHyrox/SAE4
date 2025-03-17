@@ -11,6 +11,14 @@ class UTILISATEUR
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+
+    #[ORM\OneToOne(mappedBy: 'Id_Uti', cascade: ['persist', 'remove'])]
+    private ?PRODUCTEUR $producteur = null;
+
+    #[ORM\OneToOne(mappedBy: 'Id_Uti', cascade: ['persist', 'remove'])]
+    private ?ADMINISTRATEUR $administrateur = null;
+
+
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
@@ -90,6 +98,28 @@ class UTILISATEUR
     {
         $this->Pwd_Uti = $Pwd_Uti;
 
+        return $this;
+    }
+
+    public function getProducteur(): ?PRODUCTEUR
+    {
+        return $this->producteur;
+    }
+
+    public function setProducteur(?PRODUCTEUR $producteur): static
+    {
+        $this->producteur = $producteur;
+        return $this;
+    }
+
+    public function getAdministrateur(): ?ADMINISTRATEUR
+    {
+        return $this->administrateur;
+    }
+
+    public function setAdministrateur(?ADMINISTRATEUR $administrateur): static
+    {
+        $this->administrateur = $administrateur;
         return $this;
     }
 }
