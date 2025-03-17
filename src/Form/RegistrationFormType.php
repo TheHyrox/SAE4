@@ -19,7 +19,7 @@ class RegistrationFormType extends AbstractType
             ->add('Nom_Uti')
             ->add('Mail_Uti')
             ->add('Adr_Uti')
-            ->add('Pwd_Uti')
+            ->add('password')
             ->add('producteur', EntityType::class, [
                 'class' => PRODUCTEUR::class,
                 'choice_label' => 'id',
