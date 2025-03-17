@@ -10,11 +10,11 @@ class ADMINISTRATEUR
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(referencedColumnName: 'id', nullable: false)]
     private ?UTILISATEUR $Id_Uti = null;
 
     public function getId(): ?int

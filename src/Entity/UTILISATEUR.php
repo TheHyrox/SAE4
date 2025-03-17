@@ -12,13 +12,13 @@ class UTILISATEUR implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: "Id_Uti")]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\OneToOne(mappedBy: 'Id_Uti', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'id', cascade: ['persist', 'remove'])]
     private ?PRODUCTEUR $producteur = null;
 
-    #[ORM\OneToOne(mappedBy: 'Id_Uti', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'id', cascade: ['persist', 'remove'])]
     private ?ADMINISTRATEUR $administrateur = null;
 
     #[ORM\Column(length: 50)]
@@ -36,7 +36,7 @@ class UTILISATEUR implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string The hashed password
      */
-    #[ORM\Column]
+    #[ORM\Column(length: 50)]
     private ?string $password = null;
 
     /**
