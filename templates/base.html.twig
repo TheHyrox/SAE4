@@ -13,67 +13,200 @@
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         {% endblock %}
     </head>
-    <body>
+    <body class="d-flex">
 
-<nav class="navbar navbar-expand-xl navbar-dark bg-dark">
-    <div class="container-fluid">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample06" aria-controls="navbarsExample06" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <div class="d-flex flex-column flex-shrink-0 p-3" style="width: 280px; min-height: 100vh; background-color: #659D31;">
+            <span class="fs-4"><img class="img-fluid mw-100" src="{{ asset('images/logo.png') }}" alt="Logo"></span>
+            <hr>
+            <div class="sidebar-content text-white">
+                <h5 class="text-center mb-3">Rechercher par :</h5>
+                
+                <form method="get" action="" class="needs-validation">
+                    <!-- Profession -->
+                    <div class="mb-3">
+                        <label for="categories" class="form-label">Profession :</label>
+                        <select class="form-select form-select-sm" name="categorie" id="categories">
+                            <option value="Tout" selected>Tout</option>
+                            <option value="Agriculteur">Agriculteur</option>
+                            <option value="Vigneron">Vigneron</option>
+                            <option value="Maraîcher">Maraîcher</option>
+                            <option value="Apiculteur">Apiculteur</option>
+                            <option value="Éleveur de volaille">Éleveur de volailles</option>
+                            <option value="Viticulteur">Viticulteur</option>
+                            <option value="Pépiniériste">Pépiniériste</option>
+                        </select>
+                    </div>
+        
+                    <!-- Ville -->
+                    <div class="mb-3">
+                        <label for="ville" class="form-label">Par ville :</label>
+                        <input type="text" class="form-control form-control-sm" id="ville" name="rechercheVille" 
+                            pattern="[A-Za-z0-9 ]{0,100}" placeholder="Ville">
+                    </div>
+        
+                        <!-- Rayon -->
+                        <div class="mb-3">
+                            <label class="form-label d-flex justify-content-between align-items-center">
+                                Autour de chez moi :
+                            </label>
+                            <button type="button" class="btn btn-sm btn-light w-100" onclick="getLocation()">
+                                <i class="bi bi-geo-alt"></i> Utiliser ma position
+                            </button>
+                            <div class="range">
+                                <input type="range" class="form-range" name="rayon" id="rayonRange"
+                                    value="100" min="1" max="100" step="1" 
+                                    onchange="AfficheRange2(this.value)" 
+                                    onkeyup="AfficheRange2(this.value)">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span id="monCurseurKm" class="small">Rayon de 100+ Km</span>
+                                    <span id="locationStatus" class="small text-warning"></span>
+                                </div>
+                            </div>
+                            <!-- Hidden inputs for coordinates -->
+                            <input type="hidden" name="latitude" id="latitude">
+                            <input type="hidden" name="longitude" id="longitude">
+                        </div>
+        
+                    <!-- Tri -->
+                    <div class="mb-4">
+                        <label for="tri" class="form-label">Tri :</label>
+                        <select class="form-select form-select-sm" name="tri" required>
+                            <option value="nombreDeProduits" selected>Nombre de produits</option>
+                            <option value="ordreNomAlphabétique">Par nom (A-Z)</option>
+                            <option value="ordreNomAntiAlphabétique">Par nom (Z-A)</option>
+                            <option value="ordrePrenomAlphabétique">Par prénom (A-Z)</option>
+                            <option value="ordrePrenomAntiAlphabétique">Par prénom (Z-A)</option>
+                        </select>
+                    </div>
 
-        <div class="collapse navbar-collapse" id="navbarsExample06">
-            <ul class="navbar-nav me-auto mb-2 mb-xl-0">
-                {# Always visible #}
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_home') }}">Accueil</a>
-                </li>
-
-                {% if app.user %}
-                    {# Visible for all logged users #}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_messagerie') }}">Messagerie</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_achats') }}">Achats</a>
-                    </li>
-
-                    {# Check if user is a PRODUCTEUR #}
-                    {% if app.user.producteur is defined and app.user.producteur is not null %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_produits') }}">Produits</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_commandes') }}">Commandes</a>
-                        </li>
-                    {% endif %}
-
-                    {# Check if user is an ADMINISTRATEUR #}
-                    {% if app.user.administrateur is defined and app.user.administrateur is not null %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('admin_panel') }}">Panneau Administrateur</a>
-                        </li>
-                    {% endif %}
-                {% endif %}
-            </ul>
-
-            <ul class="navbar-nav">
-                {% if app.user %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_logout') }}">Déconnexion</a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_login') }}">Connexion</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_register') }}">Inscription</a>
-                    </li>
-                {% endif %}
-            </ul>
+                    <button type="submit" class="btn btn-primary w-100">Rechercher</button>
+                </form>
+            </div> 
         </div>
-    </div>
-</nav>
 
-        {% block body %}{% endblock %}
+        <!-- Main content wrapper -->
+        <div class="flex-grow-1">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-xl navbar-dark bg-white">
+                <div class="container-fluid">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample06" aria-controls="navbarsExample06" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarsExample06">
+                        <ul class="navbar-nav me-auto mb-2 mb-xl-0 d-flex align-items-center">
+                            {# Always visible #}
+                            <li class="nav-item">
+                                <a class="nav-link text-black" href="{{ path('app_home') }}">Accueil</a>
+                            </li>
+                    
+                            {% if app.user %}
+                                <li class="vr" style="background-color: #659D31; width: 4px; height: 40px;"></li>
+                                {# Visible for all logged users #}
+                                <li class="nav-item">
+                                    <a class="nav-link text-black" href="{{ path('app_messagerie') }}">Messagerie</a>
+                                </li>
+                                <li class="vr" style="background-color: #659D31; width: 2px; height: 40px;"></li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-black" href="{{ path('app_achats') }}">Achats</a>
+                                </li>
+                    
+                                {# Check if user is a PRODUCTEUR #}
+                                {% if app.user.producteur is defined and app.user.producteur is not null %}
+                                    <li class="vr" style="background-color: #659D31; width: 2px; height: 40px;"></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-black" href="{{ path('app_produits') }}">Produits</a>
+                                    </li>
+                                    <li class="vr" style="background-color: #659D31; width: 2px; height: 40px;"></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-black" href="{{ path('app_commandes') }}">Commandes</a>
+                                    </li>
+                                {% endif %}
+                    
+                                {# Check if user is an ADMINISTRATEUR #}
+                                {% if app.user.administrateur is defined and app.user.administrateur is not null %}
+                                    <li class="vr" style="background-color: #659D31; width: 2px; height: 40px;"></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link text-black" href="{{ path('admin_panel') }}">Panneau Administrateur</a>
+                                    </li>
+                                {% endif %}
+                            {% endif %}
+                        </ul>
+                    
+                        <ul class="navbar-nav d-flex align-items-center">
+                            {% if app.user %}
+                                <li class="vr" style="background-color: #659D31; width: 2px; height: 40px;"></li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-black" href="{{ path('app_logout') }}">Déconnexion</a>
+                                </li>
+                            {% else %}
+                                <li class="vr" style="background-color: #659D31; width: 2px; height: 40px;"></li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-black" href="{{ path('app_login') }}">Connexion</a>
+                                </li>
+                                <li class="vr" style="background-color: #659D31; width: 2px; height: 40px;"></li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-black" href="{{ path('app_register') }}">Inscription</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <main class="p-3">
+                {% block body %}{% endblock %}
+            </main>
+        </div>
+
     </body>
+
+    <script>
+        function getLocation() {
+            const statusElement = document.getElementById('locationStatus');
+            
+            if (!navigator.geolocation) {
+                statusElement.textContent = 'La géolocalisation n\'est pas supportée par votre navigateur';
+                return;
+            }
+
+            statusElement.textContent = 'Recherche de votre position...';
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    // Success
+                    document.getElementById('latitude').value = position.coords.latitude;
+                    document.getElementById('longitude').value = position.coords.longitude;
+                    statusElement.textContent = '✓ Position trouvée';
+                    statusElement.className = 'small text-success';
+                },
+                (error) => {
+                    // Error
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            statusElement.textContent = 'Accès à la localisation refusé';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            statusElement.textContent = 'Position non disponible';
+                            break;
+                        case error.TIMEOUT:
+                            statusElement.textContent = 'Délai d\'attente dépassé';
+                            break;
+                        default:
+                            statusElement.textContent = 'Erreur inconnue';
+                    }
+                    statusElement.className = 'small text-danger';
+                }
+            );
+        }
+
+        function AfficheRange2(newVal) {
+            var monCurseurKm = document.getElementById("monCurseurKm");
+            if (newVal >= 100) {
+                monCurseurKm.innerHTML = "Rayon de " + newVal + "+ Km";
+            } else {
+                monCurseurKm.innerHTML = "Rayon de " + newVal + " Km";
+            }
+        }
+    </script>
 </html>
