@@ -36,7 +36,7 @@ class UTILISATEUR implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string The hashed password
      */
-    #[ORM\Column(length: 50)]
+    #[ORM\Column]
     private ?string $password = null;
 
     /**
