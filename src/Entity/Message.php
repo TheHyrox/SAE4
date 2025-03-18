@@ -20,13 +20,16 @@ class Message
     #[ORM\Column(length: 2048)]
     private ?string $content = null;
 
-    #[ORM\OneToOne(inversedBy: 'messages', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'sentMessages')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $sender = null;
 
-    #[ORM\OneToOne(inversedBy: 'receivedMessage', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'receivedMessages')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $recipient = null;
+    
+    #[ORM\Column(options: ["default" => false])]
+    private ?bool $isRead = false;
 
     public function getId(): ?int
     {
@@ -78,6 +81,18 @@ class Message
     {
         $this->recipient = $recipient;
 
+        return $this;
+    }
+    
+    public function isRead(): ?bool
+    {
+        return $this->isRead;
+    }
+    
+    public function setIsRead(bool $isRead): static
+    {
+        $this->isRead = $isRead;
+        
         return $this;
     }
 }

@@ -10,7 +10,7 @@
         </button>
 
         {# Recent Contacts List #}
-        <div class="flex-grow-1 overflow-auto">
+        <div class="flex-grow-1 overflow-auto" style="color:black">
             {% set uniqueContacts = [] %}
             {% for message in messages %}
                 {% set contact = message.sender.id == app.user.id ? message.recipient : message.sender %}
@@ -59,7 +59,7 @@
 {% block body %}
     <div class="d-flex flex-column h-100">
         {# Chat Header #}
-        <div class="chat-header p-3 border-bottom">
+        <div class="chat-header px-3 pb-3 border-bottom">
             {% if selectedUser is defined and selectedUser %}
                 <h5 class="m-0">
                     {{ selectedUser.firstName }} {{ selectedUser.name }}
@@ -80,7 +80,7 @@
                     <div class="message-content p-2 rounded">
                         {{ message.content|nl2br }}
                     </div>
-                    <small class="text-muted">{{ message.sentAt|date('d/m/Y H:i') }}</small>
+                    <small class="text-muted">{{ message.sendDate|date('d/m/Y H:i') }}</small>
                 </div>
             {% else %}
                 {% if selectedUser is defined and selectedUser %}

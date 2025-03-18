@@ -46,11 +46,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?TypeProfession $profession = null;
 
-    #[ORM\OneToOne(mappedBy: 'sender', cascade: ['persist', 'remove'])]
-    private ?Message $messages = null;
+    /**
+     * @var Collection<int, Message>
+     */
+    #[ORM\OneToMany(mappedBy: 'sender', targetEntity: Message::class)]
+    private Collection $sentMessages;
 
-    #[ORM\OneToOne(mappedBy: 'recipient', cascade: ['persist', 'remove'])]
-    private ?Message $receivedMessage = null;
+    /**
+     * @var Collection<int, Message>
+     */
+    #[ORM\OneToMany(mappedBy: 'recipient', targetEntity: Message::class)]
+    private Collection $receivedMessages;
 
     /**
      * @var Collection<int, Command>
@@ -62,6 +68,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->products = new ArrayCollection();
         $this->commands = new ArrayCollection();
+        $this->sentMessages = new ArrayCollection();
+        $this->receivedMessages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -253,5 +261,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
+    }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getSentMessages(): Collection
+    {
+        return $this->sentMessages;
+    }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getReceivedMessages(): Collection
+    {
+        return $this->receivedMessages;
     }
 }

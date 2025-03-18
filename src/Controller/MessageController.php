@@ -73,7 +73,6 @@ class MessageController extends AbstractController
         $message->setSendDate(new \DateTime());
         $message->setSender($currentUser);
         $message->setRecipient($recipient);
-        $message->setIsRead(false);
 
         $entityManager->persist($message);
         $entityManager->flush();
@@ -150,13 +149,6 @@ class MessageController extends AbstractController
             return $a->getSendDate() <=> $b->getSendDate();
         });
         
-        // Mark all received messages as read
-        foreach ($receivedMessages as $message) {
-            if (!$message->isRead()) {
-                $message->setIsRead(true);
-                $entityManager->persist($message);
-            }
-        }
         $entityManager->flush();
         
         // Get all received messages for sidebar
