@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\TypeProduct;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use Entity\Outadated\PRODUCTEUR;
-use Entity\Outadated\UTILISATEUR;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,19 +14,24 @@ final class ProducteurController extends AbstractController
     #[Route('/producteur/{id}', name: 'app_producteur')]
     public function show(int $id, EntityManagerInterface $entityManager): Response
     {
-        $queryBuilder = $entityManager->createQueryBuilder();
-        $queryBuilder
-            ->select('u', 'p')
-            ->from(UTILISATEUR::class, 'u')
-            ->innerJoin(PRODUCTEUR::class, 'p', 'WITH', 'u.id = p.Id_Uti')
-            ->where('p.id = :id')
-            ->setParameter('id', $id);
+        $producteur = $entityManager->getRepository(User::class)->find($id);
 
-        $producteur = $queryBuilder->getQuery()->getResult();
+        if (!$producteur || !in_array('ROLE_PRODUCTEUR', $producteur->getRoles())) {
+            throw $this->createNotFoundException('Producteur non trouvé');
+        }
 
-        return $this->render('producteur/show.html.twig', [
-            dd($producteur),
+        $products = $entityManager->createQueryBuilder()
+            ->select('p', 'tp')
+            ->from('App\Entity\Product', 'p')
+            ->leftJoin('p.typeProduct', 'tp')
+            ->where('p.user = :userId')
+            ->setParameter('userId', $id)
+            ->getQuery()
+            ->getResult();
+
+        return $this->render('producteur/producteur.html.twig', [
             'producteur' => $producteur,
+            'products' => $products
         ]);
     }
 }
