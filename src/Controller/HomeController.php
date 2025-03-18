@@ -46,24 +46,6 @@ final class HomeController extends AbstractController
         ]);
     }
 
-    #[Route('/', name: 'app_produits')]
-    public function produits(EntityManagerInterface $entityManager): Response
-    {
-        $queryBuilder = $entityManager->createQueryBuilder();
-        $queryBuilder
-            ->select('u')
-            ->from(User::class, 'u')
-            ->where('u.roles LIKE :role AND u.roles NOT LIKE :role2')
-            ->setParameter('role', '%ROLE_PRODUCTEUR%')
-            ->setParameter('role2', '%ROLE_ADMIN%');
-
-        $producteurs = $queryBuilder->getQuery()->getResult();
-
-        return $this->render('home/index.html.twig', [
-            'producteurs' => $producteurs,
-        ]);
-    }
-
     #[Route('/', name: 'app_commandes')]
     public function commands(EntityManagerInterface $entityManager): Response
     {
