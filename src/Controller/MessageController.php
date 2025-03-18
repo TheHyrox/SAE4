@@ -24,19 +24,19 @@ class MessageController extends AbstractController
         // Get received messages
         $receivedMessages = $entityManager->getRepository(Message::class)->findBy([
             'recipient' => $currentUser
-        ], ['sentAt' => 'DESC']);
+        ], ['sendDate' => 'DESC']);
         
         // Get sent messages
         $sentMessages = $entityManager->getRepository(Message::class)->findBy([
             'sender' => $currentUser
-        ], ['sentAt' => 'DESC']);
+        ], ['sendDate' => 'DESC']);
         
         // Combine all messages
         $allMessages = array_merge($receivedMessages, $sentMessages);
         
         // Sort by date (most recent first)
         usort($allMessages, function($a, $b) {
-            return $b->getSentAt() <=> $a->getSentAt();
+            return $b->getSendDate() <=> $a->getSendDate();
         });
 
         return $this->render('message/index.html.twig', [
@@ -70,13 +70,10 @@ class MessageController extends AbstractController
         
         $message = new Message();
         $message->setContent(htmlspecialchars($content));
-        $message->setSentAt(new \DateTime());
+        $message->setSendDate(new \DateTime());
         $message->setSender($currentUser);
         $message->setRecipient($recipient);
         $message->setIsRead(false);
-        
-        // Set expiration date to 30 days from now (optional)
-        $message->setExpiresAt(new \DateTime('+30 days'));
 
         $entityManager->persist($message);
         $entityManager->flush();
@@ -150,7 +147,7 @@ class MessageController extends AbstractController
         // Combine and sort by date
         $conversation = array_merge($sentMessages, $receivedMessages);
         usort($conversation, function($a, $b) {
-            return $a->getSentAt() <=> $b->getSentAt();
+            return $a->getSendDate() <=> $b->getSendDate();
         });
         
         // Mark all received messages as read
@@ -165,17 +162,17 @@ class MessageController extends AbstractController
         // Get all received messages for sidebar
         $allReceivedMessages = $entityManager->getRepository(Message::class)->findBy([
             'recipient' => $currentUser
-        ], ['sentAt' => 'DESC']);
+        ], ['sendDate' => 'DESC']);
         
         // Get all sent messages for sidebar
         $allSentMessages = $entityManager->getRepository(Message::class)->findBy([
             'sender' => $currentUser
-        ], ['sentAt' => 'DESC']);
+        ], ['sendDate' => 'DESC']);
         
         // Combine and sort by date
         $allMessages = array_merge($allReceivedMessages, $allSentMessages);
         usort($allMessages, function($a, $b) {
-            return $b->getSentAt() <=> $a->getSentAt();
+            return $b->getSendDate() <=> $a->getSendDate();
         });
         
         return $this->render('message/index.html.twig', [
