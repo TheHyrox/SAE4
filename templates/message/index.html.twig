@@ -76,6 +76,13 @@
         {# Messages Container #}
         <div class="flex-grow-1 overflow-auto p-3" id="messagesContainer">
             <div class="messages-wrapper">
+                {% if selectedUser is defined and selectedUser and conversation|default([])|length == 0 %}
+                    <div class="text-center text-muted my-5">
+                        <p>Aucun message dans cette conversation.</p>
+                        <p>Envoyez un message pour démarrer la conversation.</p>
+                    </div>
+                {% endif %}
+                
                 {% for message in conversation|default([]) %}
                     <div class="message-bubble mb-3 {% if message.sender.id == app.user.id %}sent{% else %}received{% endif %}" style="width: 40%; color: white">
                         <div class="message-content p-2 rounded" style="background-color: #659D31;">
@@ -83,13 +90,6 @@
                         </div>
                         <small class="text-muted">{{ message.sendDate|date('d-m-Y H:i:s', 'Europe/Paris') }}</small>
                     </div>
-                {% else %}
-                    {% if selectedUser is defined and selectedUser %}
-                        <div class="text-center text-muted my-5">
-                            <p>Aucun message dans cette conversation.</p>
-                            <p>Envoyez un message pour démarrer la conversation.</p>
-                        </div>
-                    {% endif %}
                 {% endfor %}
             </div>
         </div>
@@ -127,7 +127,6 @@
             background-color: #f1f1f1;
         }
         .messages-wrapper {
-            margin-top: auto;
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -138,9 +137,9 @@
             scrollbar-color: rgba(0,0,0,.2) transparent;
             overflow-y: auto;
             overflow-x: hidden;
-            height: calc(100vh - 180px);
+            height: calc(100vh - 220px); /* Adjust height to account for header and input */
             display: flex;
-            flex-direction: column;
+            flex-direction: column-reverse; /* This reverses the container so newest messages are at the bottom */
             position: relative;
         }
 
@@ -221,13 +220,25 @@
             function scrollMessagesToBottom() {
                 const messagesContainer = document.getElementById('messagesContainer');
                 if (messagesContainer) {
-                    // Force a reflow to ensure correct scrollHeight
-                    void messagesContainer.offsetHeight;
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    // Make sure we get the actual height by forcing layout
+                    const scrollHeight = messagesContainer.scrollHeight;
+                    messagesContainer.scrollTop = scrollHeight;
+                    
+                    // Double-check the scroll was applied correctly
+                    if (messagesContainer.scrollTop !== scrollHeight) {
+                        // Try again with a slight delay (solves most race conditions)
+                        setTimeout(() => {
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }, 50);
+                    }
                 }
             }
             scrollMessagesToBottom();
-            setTimeout(scrollMessagesToBottom, 100);
+            window.addEventListener('load', scrollMessagesToBottom);
+            setTimeout(scrollMessagesToBottom, 500);
+            setTimeout(scrollMessagesToBottom, 1000);
+            window.addEventListener('resize', scrollMessagesToBottom);
+    
             const messagesContainer = document.getElementById('messagesContainer');
             if (messagesContainer) {
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
