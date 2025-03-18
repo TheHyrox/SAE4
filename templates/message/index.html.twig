@@ -29,17 +29,17 @@
     </div>
 
     {# New Message Modal #}
-    <div class="modal fade" id="newMessageModal" tabindex="-1">
+    <div class="modal fade" id="newMessageModal" tabindex="-1" aria-labelledby="newMessageModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Nouveau message</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="newMessageModalLabel">Nouveau message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <input type="text" id="searchUser" class="form-control" placeholder="Rechercher un utilisateur...">
-                        <div id="searchResults" class="mt-2"></div>
+                    <div class="mb-3 search-container">
+                        <input type="text" id="searchUser" class="form-control" placeholder="Rechercher par nom, prénom ou email...">
+                        <div id="searchResults"></div>
                     </div>
                     <form id="newMessageForm" method="post" action="{{ path('app_messagerie_send') }}" class="d-none">
                         <input type="hidden" name="_token" value="{{ csrf_token('send-message') }}">
@@ -48,7 +48,9 @@
                             <label for="newMessageContent" class="form-label">Message pour <span id="selectedUserName"></span></label>
                             <textarea name="content" id="newMessageContent" class="form-control" rows="3" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Envoyer</button>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Envoyer</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -158,101 +160,242 @@
             display: inline-block;
             margin-right: 5px;
         }
+
+        .search-container {
+            position: relative;
+        }
+
+        #searchResults {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 1050;
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-top: -1px;
+        }
+
+        .search-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .search-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .search-item .avatar {
+            font-size: 1.5rem;
+            color: #6c757d;
+            width: 32px;
+            text-align: center;
+        }
+
+        .search-item .user-email {
+            font-weight: 500;
+            color: #212529;
+        }
+
+        .search-item .user-name {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+
+        .search-item .profession {
+            color: #6c757d;
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+
+        .search-item .producer-badge {
+            background-color: #198754;
+            color: white;
+            border-radius: 10px;
+            padding: 1px 8px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+
+        .search-item.loading,
+        .search-item.no-results,
+        .search-item.error {
+            color: #6c757d;
+            cursor: default;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .search-item.error {
+            color: #dc3545;
+        }
     </style>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     <script>
-        // Add user search functionality
-        const searchUser = document.getElementById('searchUser');
-        const searchResults = document.getElementById('searchResults');
-        const newMessageForm = document.getElementById('newMessageForm');
-        const selectedUserId = document.getElementById('selectedUserId');
-        const selectedUserName = document.getElementById('selectedUserName');
-        
-        searchUser.addEventListener('input', async (e) => {
-            if (e.target.value.length < 2) {
-                searchResults.innerHTML = '';
-                newMessageForm.classList.add('d-none');
-                return;
-            }
+        // Initialize search functionality when the document is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements for search and messaging
+            const searchUser = document.getElementById('searchUser');
+            const searchResults = document.getElementById('searchResults');
+            const newMessageForm = document.getElementById('newMessageForm');
+            const selectedUserId = document.getElementById('selectedUserId');
+            const selectedUserName = document.getElementById('selectedUserName');
             
-            try {
-                const response = await fetch(`/api/users/search?q=${e.target.value}`);
-                const users = await response.json();
+            // Debounce function to limit API calls
+            function debounce(func, wait) {
+                let timeout;
+                return function(...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), wait);
+                };
+            }
+
+            // Perform search with debounce
+            const performSearch = debounce(async (query) => {
+                console.log("Performing search for:", query);
                 
-                if (users.length === 0) {
-                    searchResults.innerHTML = '<div class="p-2 text-muted">Aucun utilisateur trouvé</div>';
-                    newMessageForm.classList.add('d-none');
+                if (query.length < 2) {
+                    searchResults.innerHTML = '';
                     return;
                 }
                 
-                searchResults.innerHTML = users.map(user => `
-                    <div class="p-2 border-bottom cursor-pointer" onclick="selectUser(${user.id}, '${user.name}', '${user.email}')">
-                        <div>${user.email}</div>
-                        <small>${user.name} ${user.isProducer ? '- Producteur' : ''}</small>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Error searching users:', error);
-                searchResults.innerHTML = '<div class="p-2 text-danger">Erreur lors de la recherche</div>';
+                searchResults.innerHTML = '<div class="search-item loading"><i class="fas fa-spinner fa-spin me-2"></i> Recherche en cours...</div>';
+                
+                try {
+                    console.log("Fetching from:", `/api/users/search?q=${encodeURIComponent(query)}`);
+                    const response = await fetch(`/api/users/search?q=${encodeURIComponent(query)}`);
+                    
+                    if (!response.ok) {
+                        console.error("Response error:", response.status, response.statusText);
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const users = await response.json();
+                    console.log("Search results:", users);
+                    
+                    if (users.length === 0) {
+                        searchResults.innerHTML = '<div class="search-item no-results">Aucun utilisateur trouvé</div>';
+                        return;
+                    }
+                    
+                    // Create results HTML
+                    searchResults.innerHTML = users.map(user => {
+                        const escapedName = user.name ? user.name.replace(/"/g, '&quot;').replace(/'/g, '&#39;') : '';
+                        const escapedFirstName = user.firstName ? user.firstName.replace(/"/g, '&quot;').replace(/'/g, '&#39;') : '';
+                        const escapedEmail = user.email ? user.email.replace(/"/g, '&quot;').replace(/'/g, '&#39;') : '';
+                        
+                        return `
+                            <div class="search-item" onclick="selectUser(${user.id}, '${escapedName}', '${escapedEmail}', '${escapedFirstName}')">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar me-2"><i class="fas fa-user-circle"></i></div>
+                                    <div class="user-info">
+                                        <div class="user-email">${escapedEmail}</div>
+                                        <div class="user-name">
+                                            ${escapedFirstName} ${escapedName}
+                                            ${user.profession ? `<span class="profession">- ${user.profession.name}</span>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } catch (error) {
+                    console.error('Error searching users:', error);
+                    searchResults.innerHTML = '<div class="search-item error">Erreur lors de la recherche: ' + error.message + '</div>';
+                }
+            }, 300);
+
+            // Only add the listener once, during initialization
+            if (searchUser) {
+                searchUser.addEventListener('input', (e) => {
+                    console.log("Search input event fired with value:", e.target.value);
+                    performSearch(e.target.value.trim());
+                });
+                
+                console.log("Search input event listener attached");
+            } else {
+                console.error("Search input element not found!");
             }
-        });
-        
-        function selectUser(id, name, email) {
-            selectedUserId.value = id;
-            selectedUserName.textContent = `${name} (${email})`;
-            newMessageForm.classList.remove('d-none');
-            searchResults.innerHTML = '';
-            searchUser.value = '';
-        }
-        
-        // Function to load conversation
-        function loadConversation(userId) {
-            window.location.href = `/messagerie/${userId}`;
-        }
 
-        
-        // Highlight active contact
-        document.addEventListener('DOMContentLoaded', function() {
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (searchResults && !searchUser?.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.innerHTML = '';
+                }
+            });
 
+            // Define selectUser globally so it can be called from onclick
+            window.selectUser = function(id, name, email, firstName = '') {
+                if (selectedUserId && selectedUserName && newMessageForm) {
+                    selectedUserId.value = id;
+                    const displayName = firstName ? `${firstName} ${name}` : name;
+                    selectedUserName.textContent = `${displayName} (${email})`;
+                    newMessageForm.classList.remove('d-none');
+                    searchResults.innerHTML = '';
+                    searchUser.value = '';
+                } else {
+                    console.error("Form elements not found!");
+                }
+            };
+
+            // Function to load conversation
+            window.loadConversation = function(userId) {
+                window.location.href = `/messagerie/${userId}`;
+            };
+
+            // Scrolling functionality for messages
             function scrollMessagesToBottom() {
                 const messagesContainer = document.getElementById('messagesContainer');
                 if (messagesContainer) {
-                    // Make sure we get the actual height by forcing layout
                     const scrollHeight = messagesContainer.scrollHeight;
                     messagesContainer.scrollTop = scrollHeight;
                     
-                    // Double-check the scroll was applied correctly
                     if (messagesContainer.scrollTop !== scrollHeight) {
-                        // Try again with a slight delay (solves most race conditions)
                         setTimeout(() => {
                             messagesContainer.scrollTop = messagesContainer.scrollHeight;
                         }, 50);
                     }
                 }
             }
+            
             scrollMessagesToBottom();
             window.addEventListener('load', scrollMessagesToBottom);
             setTimeout(scrollMessagesToBottom, 500);
-            setTimeout(scrollMessagesToBottom, 1000);
             window.addEventListener('resize', scrollMessagesToBottom);
-    
-            const messagesContainer = document.getElementById('messagesContainer');
-            if (messagesContainer) {
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
             
-            // Existing DOMContentLoaded code...
-            const urlParams = new URLSearchParams(window.location.search);
+            // Highlight active contact
             const userId = window.location.pathname.split('/').pop();
-            
             if (userId && !isNaN(userId)) {
                 const contactItems = document.querySelectorAll('.contact-item');
                 contactItems.forEach(item => {
-                    if (item.getAttribute('onclick').includes(userId)) {
+                    const onclickAttr = item.getAttribute('onclick');
+                    if (onclickAttr && onclickAttr.includes(userId)) {
                         item.classList.add('active');
+                    }
+                });
+            }
+
+            // Listen for modal show event to focus search input
+            const newMessageModal = document.getElementById('newMessageModal');
+            if (newMessageModal) {
+                newMessageModal.addEventListener('shown.bs.modal', function () {
+                    if (searchUser) {
+                        searchUser.focus();
+                        searchUser.value = '';
+                        searchResults.innerHTML = '';
                     }
                 });
             }
