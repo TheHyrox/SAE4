@@ -15,76 +15,18 @@
     </head>
     <body class="d-flex">
 
+        <!-- Sidebar -->
         <div class="d-flex flex-column flex-shrink-0 p-3" style="width: 280px; min-height: 100vh; background-color: #659D31;">
             <span class="fs-4"><img class="img-fluid mw-100" src="{{ asset('images/logo.png') }}" alt="Logo"></span>
             <hr>
             <div class="sidebar-content text-white">
-                <h5 class="text-center mb-3">Rechercher par :</h5>
-                
-                <form method="get" action="" class="needs-validation">
-                    <!-- Profession -->
-                    <div class="mb-3">
-                        <label for="categories" class="form-label">Profession :</label>
-                        <select class="form-select form-select-sm" name="categorie" id="categories">
-                            <option value="Tout" selected>Tout</option>
-                            <option value="Agriculteur">Agriculteur</option>
-                            <option value="Vigneron">Vigneron</option>
-                            <option value="Maraîcher">Maraîcher</option>
-                            <option value="Apiculteur">Apiculteur</option>
-                            <option value="Éleveur de volaille">Éleveur de volailles</option>
-                            <option value="Viticulteur">Viticulteur</option>
-                            <option value="Pépiniériste">Pépiniériste</option>
-                        </select>
-                    </div>
-        
-                    <!-- Ville -->
-                    <div class="mb-3">
-                        <label for="ville" class="form-label">Par ville :</label>
-                        <input type="text" class="form-control form-control-sm" id="ville" name="rechercheVille" 
-                            pattern="[A-Za-z0-9 ]{0,100}" placeholder="Ville">
-                    </div>
-        
-                        <!-- Rayon -->
-                        <div class="mb-3">
-                            <label class="form-label d-flex justify-content-between align-items-center">
-                                Autour de chez moi :
-                            </label>
-                            <button type="button" class="btn btn-sm btn-light w-100" onclick="getLocation()">
-                                <i class="bi bi-geo-alt"></i> Utiliser ma position
-                            </button>
-                            <div class="range">
-                                <input type="range" class="form-range" name="rayon" id="rayonRange"
-                                    value="100" min="1" max="100" step="1" 
-                                    onchange="AfficheRange2(this.value)" 
-                                    onkeyup="AfficheRange2(this.value)">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span id="monCurseurKm" class="small">Rayon de 100+ Km</span>
-                                    <span id="locationStatus" class="small text-warning"></span>
-                                </div>
-                            </div>
-                            <!-- Hidden inputs for coordinates -->
-                            <input type="hidden" name="latitude" id="latitude">
-                            <input type="hidden" name="longitude" id="longitude">
-                        </div>
-        
-                    <!-- Tri -->
-                    <div class="mb-4">
-                        <label for="tri" class="form-label">Tri :</label>
-                        <select class="form-select form-select-sm" name="tri" required>
-                            <option value="nombreDeProduits" selected>Nombre de produits</option>
-                            <option value="ordreNomAlphabétique">Par nom (A-Z)</option>
-                            <option value="ordreNomAntiAlphabétique">Par nom (Z-A)</option>
-                            <option value="ordrePrenomAlphabétique">Par prénom (A-Z)</option>
-                            <option value="ordrePrenomAntiAlphabétique">Par prénom (Z-A)</option>
-                        </select>
-                    </div>
+                {% block sidebar%}
 
-                    <button type="submit" class="btn btn-primary w-100">Rechercher</button>
-                </form>
+                {% endblock %}
             </div> 
         </div>
 
-        <!-- Main content wrapper -->
+        <!-- NavBar -->
         <div class="flex-grow-1">
             <!-- Navbar -->
             <nav class="navbar navbar-expand-xl navbar-dark bg-white">
