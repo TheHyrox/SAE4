@@ -26,4 +26,72 @@ final class HomeController extends AbstractController
             'producteurs' => $producteurs,
         ]);
     }
+
+    #[Route('/', name: 'app_achats')]
+    public function achats(EntityManagerInterface $entityManager): Response
+    {
+        $queryBuilder = $entityManager->createQueryBuilder();
+        $queryBuilder
+            ->select('u')
+            ->from(User::class, 'u')
+            ->where('u.roles LIKE :role')
+            ->setParameter('role', '%ROLE_PRODUCTEUR%');
+
+        $producteurs = $queryBuilder->getQuery()->getResult();
+
+        return $this->render('home/index.html.twig', [
+            'producteurs' => $producteurs,
+        ]);
+    }
+
+    #[Route('/', name: 'app_produits')]
+    public function produits(EntityManagerInterface $entityManager): Response
+    {
+        $queryBuilder = $entityManager->createQueryBuilder();
+        $queryBuilder
+            ->select('u')
+            ->from(User::class, 'u')
+            ->where('u.roles LIKE :role')
+            ->setParameter('role', '%ROLE_PRODUCTEUR%');
+
+        $producteurs = $queryBuilder->getQuery()->getResult();
+
+        return $this->render('home/index.html.twig', [
+            'producteurs' => $producteurs,
+        ]);
+    }
+
+    #[Route('/', name: 'app_commandes')]
+    public function commands(EntityManagerInterface $entityManager): Response
+    {
+        $queryBuilder = $entityManager->createQueryBuilder();
+        $queryBuilder
+            ->select('u')
+            ->from(User::class, 'u')
+            ->where('u.roles LIKE :role')
+            ->setParameter('role', '%ROLE_PRODUCTEUR%');
+
+        $producteurs = $queryBuilder->getQuery()->getResult();
+
+        return $this->render('home/index.html.twig', [
+            'producteurs' => $producteurs,
+        ]);
+    }
+
+    #[Route('/', name: 'admin_panel')]
+    public function adminPanel(EntityManagerInterface $entityManager): Response
+    {
+        $queryBuilder = $entityManager->createQueryBuilder();
+        $queryBuilder
+            ->select('u')
+            ->from(User::class, 'u')
+            ->where('u.roles LIKE :role')
+            ->setParameter('role', '%ROLE_PRODUCTEUR%');
+
+        $producteurs = $queryBuilder->getQuery()->getResult();
+
+        return $this->render('home/index.html.twig', [
+            'producteurs' => $producteurs,
+        ]);
+    }
 }
