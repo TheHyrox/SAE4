@@ -73,12 +73,12 @@
         </div>
 
         {# Message Input #}
-        <div class="chat-input p-3 border-top">
+        <div class="chat-input px-3 pt-3 border-top">
             <form method="post" action="{{ path('app_messagerie_send') }}" class="d-flex">
                 <input type="hidden" name="_token" value="{{ csrf_token('send-message') }}">
                 <input type="hidden" name="destinataire" id="destinataire" value="{{ selectedUser.id|default('') }}">
                 <input type="text" name="content" class="form-control me-2" placeholder="Votre message..." required>
-                <button type="submit" class="btn btn-primary">Envoyer</button>
+                <button type="submit" class="btn" style="background-color: white; color:black">Envoyer</button>
             </form>
         </div>
     </div>
