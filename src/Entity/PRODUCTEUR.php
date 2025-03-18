@@ -10,7 +10,7 @@ class PRODUCTEUR
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
@@ -25,7 +25,7 @@ class PRODUCTEUR
         return $this->id;
     }
 
-    public function getProfProd(): ?string
+    public function getProf_Prod(): ?string
     {
         return $this->Prof_Prod;
     }
