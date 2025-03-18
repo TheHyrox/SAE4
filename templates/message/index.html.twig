@@ -74,9 +74,9 @@
         </div>
 
         {# Messages Container #}
-        <div class="flex-grow-1 overflow-auto p-3" id="messagesContainer" style="height: calc(100vh - 180px);">
+        <div class="flex-grow-1 overflow-auto p-3" id="messagesContainer" style="height: calc(100vh - 180px); color:white">
             {% for message in conversation|default([]) %}
-                <div class="message-bubble mb-3 {% if message.sender.id == app.user.id %}sent{% else %}received{% endif %}">
+                <div class="message-bubble mb-3 {% if message.sender.id == app.user.id %}sent{% else %}received{% endif %}" style="width: 40%;">
                     <div class="message-content p-2 rounded" style="background-color: #659D31;">
                         {{ message.content|nl2br }}
                     </div>
@@ -196,14 +196,21 @@
             window.location.href = `/messagerie/${userId}`;
         }
 
-        // Auto-scroll to bottom of messages
-        const messagesContainer = document.getElementById('messagesContainer');
-        if (messagesContainer) {
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        function scrollToBottom() {
+            const messagesContainer = document.getElementById('messagesContainer');
+            if (messagesContainer) {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
         }
         
         // Highlight active contact
         document.addEventListener('DOMContentLoaded', function() {
+
+            scrollToBottom();
+
+            [50, 100, 500, 1000].forEach(delay => {
+                setTimeout(scrollToBottom, delay);
+            });
             const urlParams = new URLSearchParams(window.location.search);
             const userId = window.location.pathname.split('/').pop();
             
