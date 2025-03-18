@@ -56,7 +56,7 @@ class SecurityController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            //return $security->login($user, 'form_login', 'main');
+            return $security->login($user, 'form_login', 'main');
         }
 
         return $this->render('security/register.html.twig', [

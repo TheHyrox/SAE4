@@ -32,7 +32,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $adress = null;
+    private ?string $address = null;
 
     /**
      * @var list<string> The user roles
@@ -116,14 +116,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getadress(): ?string
+    public function getaddress(): ?string
     {
-        return $this->adress;
+        return $this->address;
     }
 
-    public function setadress(string $adress): static
+    public function setaddress(string $address): static
     {
-        $this->adress = $adress;
+        $this->address = $address;
 
         return $this;
     }

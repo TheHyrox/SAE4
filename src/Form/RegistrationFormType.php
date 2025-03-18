@@ -24,7 +24,7 @@ class RegistrationFormType extends AbstractType
             ->add('email', null,[
                 'label' => 'Email'
             ])
-            ->add('adress', null,[
+            ->add('address', null,[
                 'label' => 'Adresse'
             ])
             ->add('password', null,[
