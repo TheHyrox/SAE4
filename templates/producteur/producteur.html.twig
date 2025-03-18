@@ -158,7 +158,7 @@
                         {% if producteur.address is defined and producteur.address %}
                             <p class="card-text"><strong>Adresse:</strong> {{ producteur.address }}</p>
                         {% endif %}
-                        <a href="{{ path('app_messagerie', {'id': producteur.id}) }}" class="btn btn-outline-success w-100">
+                        <a href="{{ path('app_messagerie') ~ '/' ~ producteur.id }}" class="btn btn-outline-success w-100">
                             <i class="bi bi-envelope"></i> Contacter le producteur
                         </a>
                     </div>
