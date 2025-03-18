@@ -23,8 +23,20 @@ final class AdminController extends AbstractController
 
         $producteurs = $queryBuilder->getQuery()->getResult();
 
-        return $this->render('home/index.html.twig', [
+        $queryBuilder = $entityManager->createQueryBuilder();
+        $queryBuilder
+            ->select('u')
+            ->from(User::class, 'u')
+            ->where('u.roles LIKE :role AND u.roles NOT LIKE :role2 AND u.roles NOT LIKE :role3')
+            ->setParameter('role', '%ROLE_USER%')
+            ->setParameter('role2', '%ROLE_ADMIN%')
+            ->setParameter('role3', '%ROLE_PRODUCTEUR%');
+
+        $users = $queryBuilder->getQuery()->getResult();
+
+        return $this->render('admin/index.html.twig', [
             'producteurs' => $producteurs,
+            'users' => $users,
         ]);
     }
 }
