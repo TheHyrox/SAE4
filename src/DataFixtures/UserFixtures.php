@@ -25,7 +25,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         $admin->setFirstName('Admin');
         $admin->setName('User');
         $admin->setaddress('1 rue de la Paix');
-        $admin->setRoles(['ROLE_ADMIN']);
+        $admin->setRoles(['ROLE_USER', 'ROLE_PRODUCTEUR', 'ROLE_ADMIN']);
         $admin->setPassword($this->passwordHasher->hashPassword($admin, 'password123'));
         $manager->persist($admin);
 
@@ -48,7 +48,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             $producteur->setFirstName("Prénom{$i}");
             $producteur->setName("Nom{$i}");
             $producteur->setaddress($cities[$i - 1]);
-            $producteur->setRoles(['ROLE_PRODUCTEUR']);
+            $producteur->setRoles(['ROLE_USER', 'ROLE_PRODUCTEUR']);
             $producteur->setPassword($this->passwordHasher->hashPassword($producteur, 'password123'));
 
             // Assign a profession
