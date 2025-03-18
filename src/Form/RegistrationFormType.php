@@ -2,7 +2,10 @@
 
 namespace App\Form;
 
-use Entity\Outadated\UTILISATEUR;
+use App\Entity\Message;
+use App\Entity\TypeProfession;
+use App\Entity\User;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -12,27 +15,29 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('Prenom_Uti', null, [
-                'label' => 'Prénom',
-                ])
-            ->add('Nom_Uti', null, [
-                'label' => 'Nom',
+            ->add('name', null,[
+                'label' => 'Nom'
             ])
-            ->add('Mail_Uti', null, [
-                'label' => 'Email',
+            ->add('firstName', null,[
+                'label' => 'Prénom'
             ])
-            ->add('Adr_Uti', null, [
-                'label' => 'Adresse',
+            ->add('email', null,[
+                'label' => 'Email'
             ])
-            ->add('password', null, [
-                'label' => 'Mot de passe',
+            ->add('password', null,[
+                'label' => 'Mot de passe'
             ])
-//            ->add('producteur', EntityType::class, [
-//                'class' => PRODUCTEUR::class,
+//            ->add('roles')
+//            ->add('profession', EntityType::class, [
+//                'class' => TypeProfession::class,
 //                'choice_label' => 'id',
 //            ])
-//            ->add('administrateur', EntityType::class, [
-//                'class' => ADMINISTRATEUR::class,
+//            ->add('messages', EntityType::class, [
+//                'class' => Message::class,
+//                'choice_label' => 'id',
+//            ])
+//            ->add('receivedMessage', EntityType::class, [
+//                'class' => Message::class,
 //                'choice_label' => 'id',
 //            ])
         ;
@@ -41,7 +46,7 @@ class RegistrationFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => UTILISATEUR::class,
+            'data_class' => User::class,
         ]);
     }
 }
