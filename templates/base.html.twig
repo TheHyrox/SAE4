@@ -28,6 +28,100 @@
             </div> 
         </div>
 
+        <!-- Modal for Profile Edit -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Modifier mon profil</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% if app.user %}
+                            <form method="post" action="{{ path('app_profile_edit') }}" enctype="multipart/form-data">
+                                <div class="mb-3 text-center">
+                                    <div class="position-relative d-inline-block">
+                                        <img src="{{ asset('images/producteur_' ~ app.user.id ~ '.jpg') }}"
+                                             class="rounded-circle img-thumbnail"
+                                             style="width: 150px; height: 150px; object-fit: cover;"
+                                             alt="Photo de profil"
+                                             id="profilePreview"
+                                             onerror="this.src='{{ asset('images/default-user.jpg') }}'">
+                                        <div class="position-absolute bottom-0 end-0 bg-success rounded-circle p-2">
+                                            <label for="profilePhotoInput" class="m-0 cursor-pointer">
+                                                <i class="fas fa-camera text-white"></i>
+                                                <input type="file" name="profilePhoto" id="profilePhotoInput" class="d-none" accept="image/*" onchange="previewProfileImage(this)">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="firstName" class="form-label">Prénom</label>
+                                    <input type="text" class="form-control" id="firstName" name="firstName" value="{{ app.user.firstName }}" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="lastName" class="form-label">Nom</label>
+                                    <input type="text" class="form-control" id="lastName" name="name" value="{{ app.user.name }}" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" value="{{ app.user.email }}" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Adresse</label>
+                                    <input type="text" class="form-control" id="address" name="address" value="{{ app.user.address }}" required>
+                                </div>
+
+                                {% if 'ROLE_PRODUCTEUR' in app.user.roles %}
+                                    <div class="mb-3">
+                                        <label for="profession" class="form-label">Profession</label>
+                                        <select class="form-select" id="profession" name="profession">
+                                            <option value="">Choisir une profession</option>
+                                            <option value="1" {% if app.user.profession and app.user.profession.id == 1 %}selected{% endif %}>Agriculteur</option>
+                                            <option value="2" {% if app.user.profession and app.user.profession.id == 2 %}selected{% endif %}>Vigneron</option>
+                                            <option value="3" {% if app.user.profession and app.user.profession.id == 3 %}selected{% endif %}>Maraîcher</option>
+                                            <option value="4" {% if app.user.profession and app.user.profession.id == 4 %}selected{% endif %}>Apiculteur</option>
+                                            <option value="5" {% if app.user.profession and app.user.profession.id == 5 %}selected{% endif %}>Éleveur de volaille</option>
+                                            <option value="6" {% if app.user.profession and app.user.profession.id == 6 %}selected{% endif %}>Viticulteur</option>
+                                            <option value="7" {% if app.user.profession and app.user.profession.id == 7 %}selected{% endif %}>Pépiniériste</option>
+                                        </select>
+                                    </div>
+                                {% endif %}
+
+                                <div class="mb-3">
+                                    <label for="currentPassword" class="form-label">Mot de passe actuel (obligatoire pour confirmer les changements)</label>
+                                    <input type="password" class="form-control" id="currentPassword" name="currentPassword">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="newPassword" class="form-label">Nouveau mot de passe (laisser vide pour ne pas changer)</label>
+                                    <input type="password" class="form-control" id="newPassword" name="newPassword">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="confirmPassword" class="form-label">Confirmer le nouveau mot de passe</label>
+                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
+                                </div>
+
+                                <!-- CSRF token for security -->
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('profile_edit') }}">
+                            </form>
+                        {% else %}
+                            <p class="text-center">Veuillez vous connecter pour modifier votre profil.</p>
+                        {% endif %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="button" class="btn btn-success" onclick="document.querySelector('#staticBackdrop form').submit()">Enregistrer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- NavBar -->
         <div class="flex-grow-1">
             <!-- Navbar -->
@@ -83,6 +177,10 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-black" href="{{ path('app_logout') }}">Déconnexion</a>
                                 </li>
+                                <div class="vr" style="background-color: #659D31; width: 2px; height: 40px;"></div>
+                                <li class="nav-item">
+                                    <a type="button" class="nav-link text-black" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Profil</a>
+                                </li>
                             {% else %}
                                 <li class="vr" style="background-color: #659D31; width: 2px; height: 40px;"></li>
                                 <li class="nav-item">
@@ -97,6 +195,18 @@
                     </div>
                 </div>
             </nav>
+
+            <!-- Flash messages -->
+            <div class="container mt-3">
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
 
             <main class="p-3">
                 {% block body %}{% endblock %}
@@ -150,6 +260,18 @@
                 monCurseurKm.innerHTML = "Rayon de " + newVal + "+ Km";
             } else {
                 monCurseurKm.innerHTML = "Rayon de " + newVal + " Km";
+            }
+        }
+
+        function previewProfileImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    document.getElementById('profilePreview').src = e.target.result;
+                }
+
+                reader.readAsDataURL(input.files[0]);
             }
         }
     </script>
