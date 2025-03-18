@@ -2,38 +2,46 @@
 
 namespace App\Controller;
 
+use App\Entity\Message;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use Entity\Outadated\MESSAGE;
-use Entity\Outadated\UTILISATEUR;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-//#[IsGranted('ROLE_USER')]
+#[IsGranted('ROLE_USER')]
 class MessageController extends AbstractController
 {
     #[Route('/messagerie', name: 'app_messagerie')]
     public function index(EntityManagerInterface $entityManager): Response
     {
-        /** @var UTILISATEUR $user */
-        $user = $this->getUser();
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
         
-        $messages = $entityManager->getRepository(MESSAGE::class)->findBy([
-            'Destinataire' => $user
-        ], ['Date_Msg' => 'DESC']);
-
-        // Get all users except current user
-        $users = $entityManager->getRepository(UTILISATEUR::class)
-            ->createQueryBuilder('u')
-            //->where('u.id != :currentUserId')
-            //->setParameter('currentUserId', $user->getId())
-            ->getQuery();
-            //->getResult();
+        // Get received messages
+        $receivedMessages = $entityManager->getRepository(Message::class)->findBy([
+            'recipient' => $currentUser
+        ], ['sentAt' => 'DESC']);
+        
+        // Get sent messages
+        $sentMessages = $entityManager->getRepository(Message::class)->findBy([
+            'sender' => $currentUser
+        ], ['sentAt' => 'DESC']);
+        
+        // Combine all messages
+        $allMessages = array_merge($receivedMessages, $sentMessages);
+        
+        // Sort by date (most recent first)
+        usort($allMessages, function($a, $b) {
+            return $b->getSentAt() <=> $a->getSentAt();
+        });
 
         return $this->render('message/index.html.twig', [
-            'messages' => $messages,
-            'users' => $users
+            'messages' => $allMessages,
+            'currentUser' => $currentUser
         ]);
     }
 
@@ -44,24 +52,41 @@ class MessageController extends AbstractController
             throw $this->createAccessDeniedException('Invalid CSRF token');
         }
 
-        $message = new MESSAGE();
-        $message->setContenuMsg(htmlspecialchars($request->request->get('content')));
-        $message->setDateMsg(new \DateTime());
-        $message->setDateExpiMsg(new \DateTime('+30 days'));
-        $message->setEmetteur($this->getUser());
+        $recipientId = $request->request->get('destinataire');
+        $content = $request->request->get('content');
         
-        $destinataire = $entityManager->getRepository(UTILISATEUR::class)->find($request->request->get('destinataire'));
-        if (!$destinataire) {
+        if (empty($recipientId) || empty($content)) {
+            $this->addFlash('error', 'Le destinataire et le contenu sont obligatoires.');
+            return $this->redirectToRoute('app_messagerie');
+        }
+        
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+        $recipient = $entityManager->getRepository(User::class)->find($recipientId);
+        
+        if (!$recipient) {
             throw $this->createNotFoundException('Destinataire non trouvé');
         }
         
-        $message->setDestinataire($destinataire);
+        $message = new Message();
+        $message->setContent(htmlspecialchars($content));
+        $message->setSentAt(new \DateTime());
+        $message->setSender($currentUser);
+        $message->setRecipient($recipient);
+        $message->setIsRead(false);
+        
+        // Set expiration date to 30 days from now (optional)
+        $message->setExpiresAt(new \DateTime('+30 days'));
 
         $entityManager->persist($message);
         $entityManager->flush();
 
-        $this->addFlash('success', 'Message envoyé');
-        return $this->redirectToRoute('app_messagerie');
+        $this->addFlash('success', 'Message envoyé avec succès.');
+        
+        // Redirect to the conversation with the recipient
+        return $this->redirectToRoute('app_messagerie_conversation', [
+            'userId' => $recipient->getId()
+        ]);
     }
 
     #[Route('/api/users/search', name: 'api_users_search')]
@@ -69,16 +94,32 @@ class MessageController extends AbstractController
     {
         $query = $request->query->get('q');
         
-        $users = $entityManager->getRepository(UTILISATEUR::class)
+        if (empty($query) || strlen($query) < 2) {
+            return $this->json([]);
+        }
+        
+        $users = $entityManager->getRepository(User::class)
             ->createQueryBuilder('u')
             ->where('u.email LIKE :query')
+            ->orWhere('u.firstName LIKE :query')
+            ->orWhere('u.name LIKE :query')
             ->andWhere('u.id != :currentUserId')
             ->setParameter('query', '%' . $query . '%')
             ->setParameter('currentUserId', $this->getUser()->getId())
+            ->setMaxResults(10)
             ->getQuery()
             ->getResult();
         
-        return $this->json($users, 200, [], ['groups' => ['search']]);
+        $formattedUsers = array_map(function(User $user) {
+            return [
+                'id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'name' => $user->getFirstName() . ' ' . $user->getName(),
+                'isProducer' => $user->getProfession() !== null
+            ];
+        }, $users);
+        
+        return $this->json($formattedUsers);
     }
 
     #[Route('/messagerie/{userId}', name: 'app_messagerie_conversation')]
@@ -87,19 +128,61 @@ class MessageController extends AbstractController
         EntityManagerInterface $entityManager
     ): Response
     {
-        $conversation = $entityManager->getRepository(MESSAGE::class)
-            ->createQueryBuilder('m')
-            ->where('m.Emetteur = :user1 AND m.Destinataire = :user2')
-            ->orWhere('m.Emetteur = :user2 AND m.Destinataire = :user1')
-            ->setParameter('user1', $this->getUser())
-            ->setParameter('user2', $userId)
-            ->orderBy('m.Date_Msg', 'ASC')
-            ->getQuery()
-            ->getResult();
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+        $otherUser = $entityManager->getRepository(User::class)->find($userId);
+        
+        if (!$otherUser) {
+            throw $this->createNotFoundException('Utilisateur non trouvé');
+        }
+        
+        // Get conversation between current user and the other user
+        $sentMessages = $entityManager->getRepository(Message::class)->findBy([
+            'sender' => $currentUser,
+            'recipient' => $otherUser
+        ]);
+        
+        $receivedMessages = $entityManager->getRepository(Message::class)->findBy([
+            'sender' => $otherUser,
+            'recipient' => $currentUser
+        ]);
+        
+        // Combine and sort by date
+        $conversation = array_merge($sentMessages, $receivedMessages);
+        usort($conversation, function($a, $b) {
+            return $a->getSentAt() <=> $b->getSentAt();
+        });
+        
+        // Mark all received messages as read
+        foreach ($receivedMessages as $message) {
+            if (!$message->isRead()) {
+                $message->setIsRead(true);
+                $entityManager->persist($message);
+            }
+        }
+        $entityManager->flush();
+        
+        // Get all received messages for sidebar
+        $allReceivedMessages = $entityManager->getRepository(Message::class)->findBy([
+            'recipient' => $currentUser
+        ], ['sentAt' => 'DESC']);
+        
+        // Get all sent messages for sidebar
+        $allSentMessages = $entityManager->getRepository(Message::class)->findBy([
+            'sender' => $currentUser
+        ], ['sentAt' => 'DESC']);
+        
+        // Combine and sort by date
+        $allMessages = array_merge($allReceivedMessages, $allSentMessages);
+        usort($allMessages, function($a, $b) {
+            return $b->getSentAt() <=> $a->getSentAt();
+        });
         
         return $this->render('message/index.html.twig', [
+            'messages' => $allMessages,
             'conversation' => $conversation,
-            'selectedUser' => $entityManager->getRepository(UTILISATEUR::class)->find($userId)
+            'selectedUser' => $otherUser,
+            'currentUser' => $currentUser
         ]);
     }
 }
