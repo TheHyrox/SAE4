@@ -33,7 +33,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="newMessageModalLabel">Nouveau message</h5>
+                    <h5 class="modal-title" id="newMessageModalLabel" style="color: black;">Nouveau message</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -45,7 +45,7 @@
                         <input type="hidden" name="_token" value="{{ csrf_token('send-message') }}">
                         <input type="hidden" name="destinataire" id="selectedUserId" value="">
                         <div class="mb-3">
-                            <label for="newMessageContent" class="form-label">Message pour <span id="selectedUserName"></span></label>
+                            <label for="newMessageContent" class="form-label" style="color: black;">Message pour <span id="selectedUserName"></span></label>
                             <textarea name="content" id="newMessageContent" class="form-control" rows="3" required></textarea>
                         </div>
                         <div class="text-end">
@@ -239,20 +239,65 @@
         .search-item.error {
             color: #dc3545;
         }
+
+        .selected-user {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 0;
+        }
+
+        .selected-user .avatar {
+            font-size: 1.5rem;
+            color: #6c757d;
+            width: 32px;
+            text-align: center;
+        }
+
+        .selected-user .user-email {
+            font-weight: 500;
+            color: #212529;
+        }
+
+        .selected-user .user-name {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+
+        .selected-user .btn-close {
+            font-size: 0.75rem;
+            color: #6c757d;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .selected-user .btn-close:hover {
+            opacity: 1;
+            color: #dc3545;
+        }
+
+        .search-container {
+            position: relative;
+        }
     </style>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     <script>
-        // Initialize search functionality when the document is loaded
         document.addEventListener('DOMContentLoaded', function() {
             // Elements for search and messaging
             const searchUser = document.getElementById('searchUser');
+            const searchContainer = document.querySelector('.search-container');
             const searchResults = document.getElementById('searchResults');
             const newMessageForm = document.getElementById('newMessageForm');
             const selectedUserId = document.getElementById('selectedUserId');
             const selectedUserName = document.getElementById('selectedUserName');
+            
+            // Create a container for the selected user display that will replace the search input
+            const selectedUserDisplay = document.createElement('div');
+            selectedUserDisplay.className = 'selected-user-display d-none';
+            searchContainer.appendChild(selectedUserDisplay);
             
             // Debounce function to limit API calls
             function debounce(func, wait) {
@@ -291,7 +336,7 @@
                         return;
                     }
                     
-                    // Create results HTML
+                    // Create results HTML with enhanced styling
                     searchResults.innerHTML = users.map(user => {
                         const escapedName = user.name ? user.name.replace(/"/g, '&quot;').replace(/'/g, '&#39;') : '';
                         const escapedFirstName = user.firstName ? user.firstName.replace(/"/g, '&quot;').replace(/'/g, '&#39;') : '';
@@ -321,11 +366,8 @@
             // Only add the listener once, during initialization
             if (searchUser) {
                 searchUser.addEventListener('input', (e) => {
-                    console.log("Search input event fired with value:", e.target.value);
                     performSearch(e.target.value.trim());
                 });
-                
-                console.log("Search input event listener attached");
             } else {
                 console.error("Search input element not found!");
             }
@@ -337,15 +379,51 @@
                 }
             });
 
+            // Function to clear the selected user
+            function clearSelectedUser() {
+                selectedUserId.value = '';
+                selectedUserDisplay.classList.add('d-none');
+                searchUser.classList.remove('d-none');
+                newMessageForm.classList.add('d-none');
+                searchUser.value = '';
+                searchUser.focus();
+            }
+
             // Define selectUser globally so it can be called from onclick
             window.selectUser = function(id, name, email, firstName = '') {
                 if (selectedUserId && selectedUserName && newMessageForm) {
                     selectedUserId.value = id;
                     const displayName = firstName ? `${firstName} ${name}` : name;
                     selectedUserName.textContent = `${displayName} (${email})`;
+                    
+                    // Create the selected user display
+                    selectedUserDisplay.innerHTML = `
+                        <div class="selected-user p-2 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar me-2"><i class="fas fa-user-circle"></i></div>
+                                <div class="user-info">
+                                    <div class="user-email">${email}</div>
+                                    <div class="user-name">${displayName}</div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close btn-sm" aria-label="Changer d'utilisateur"></button>
+                        </div>
+                    `;
+                    
+                    // Hide search input, show selected user display
+                    searchUser.classList.add('d-none');
+                    selectedUserDisplay.classList.remove('d-none');
+                    
+                    // Add event listener to the clear button
+                    const clearBtn = selectedUserDisplay.querySelector('.btn-close');
+                    clearBtn.addEventListener('click', clearSelectedUser);
+                    
+                    // Show the message form
                     newMessageForm.classList.remove('d-none');
                     searchResults.innerHTML = '';
-                    searchUser.value = '';
+                    
+                    // Focus on the message textarea
+                    document.getElementById('newMessageContent').focus();
                 } else {
                     console.error("Form elements not found!");
                 }
@@ -388,15 +466,11 @@
                 });
             }
 
-            // Listen for modal show event to focus search input
+            // Listen for modal show event to prepare search
             const newMessageModal = document.getElementById('newMessageModal');
             if (newMessageModal) {
                 newMessageModal.addEventListener('shown.bs.modal', function () {
-                    if (searchUser) {
-                        searchUser.focus();
-                        searchUser.value = '';
-                        searchResults.innerHTML = '';
-                    }
+                    clearSelectedUser();
                 });
             }
         });
