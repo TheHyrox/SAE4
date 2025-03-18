@@ -24,6 +24,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         $admin->setEmail('admin@example.com');
         $admin->setFirstName('Admin');
         $admin->setName('User');
+        $admin->setaddress('1 rue de la Paix');
         $admin->setRoles(['ROLE_ADMIN']);
         $admin->setPassword($this->passwordHasher->hashPassword($admin, 'password123'));
         $manager->persist($admin);
@@ -46,6 +47,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             $producteur->setEmail("producteur{$i}@example.com");
             $producteur->setFirstName("Prénom{$i}");
             $producteur->setName("Nom{$i}");
+            $producteur->setaddress($cities[$i - 1]);
             $producteur->setRoles(['ROLE_PRODUCTEUR']);
             $producteur->setPassword($this->passwordHasher->hashPassword($producteur, 'password123'));
 
@@ -71,6 +73,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         $customer->setEmail('customer@example.com');
         $customer->setFirstName('Customer');
         $customer->setName('User');
+        $customer->setaddress('1 rue de la Paix');
         $customer->setRoles(['ROLE_USER']);
         $customer->setPassword($this->passwordHasher->hashPassword($customer, 'password123'));
         $manager->persist($customer);
