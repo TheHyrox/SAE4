@@ -2,8 +2,8 @@
 
 namespace Entity\Outadated;
 
-use App\Repository\PRODUCTEURRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Repository\Outadated\PRODUCTEURRepository;
 
 #[ORM\Entity(repositoryClass: PRODUCTEURRepository::class)]
 class PRODUCTEUR

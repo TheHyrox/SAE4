@@ -1,40 +1,40 @@
 <?php
 
-namespace App\Repository;
+namespace Repository\Outadated;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Entity\Outadated\COMMANDE;
+use Entity\Outadated\UTILISATEUR;
 
 /**
- * @extends ServiceEntityRepository<COMMANDE>
+ * @extends ServiceEntityRepository<UTILISATEUR>
  */
-class COMMANDERepository extends ServiceEntityRepository
+class UTILISATEURRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, COMMANDE::class);
+        parent::__construct($registry, UTILISATEUR::class);
     }
 
     //    /**
-    //     * @return COMMANDE[] Returns an array of COMMANDE objects
+    //     * @return UTILISATEUR[] Returns an array of UTILISATEUR objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
+    //        return $this->createQueryBuilder('u')
+    //            ->andWhere('u.exampleField = :val')
     //            ->setParameter('val', $value)
-    //            ->orderBy('c.id', 'ASC')
+    //            ->orderBy('u.id', 'ASC')
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?COMMANDE
+    //    public function findOneBySomeField($value): ?UTILISATEUR
     //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
+    //        return $this->createQueryBuilder('u')
+    //            ->andWhere('u.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->getQuery()
     //            ->getOneOrNullResult()

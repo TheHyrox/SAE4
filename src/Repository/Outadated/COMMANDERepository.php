@@ -1,40 +1,40 @@
 <?php
 
-namespace App\Repository;
+namespace Repository\Outadated;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Entity\Outadated\TYPEDEPRODUIT;
+use Entity\Outadated\COMMANDE;
 
 /**
- * @extends ServiceEntityRepository<TYPEDEPRODUIT>
+ * @extends ServiceEntityRepository<COMMANDE>
  */
-class TYPEDEPRODUITRepository extends ServiceEntityRepository
+class COMMANDERepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, TYPEDEPRODUIT::class);
+        parent::__construct($registry, COMMANDE::class);
     }
 
     //    /**
-    //     * @return TYPEDEPRODUIT[] Returns an array of TYPEDEPRODUIT objects
+    //     * @return COMMANDE[] Returns an array of COMMANDE objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
+    //        return $this->createQueryBuilder('c')
+    //            ->andWhere('c.exampleField = :val')
     //            ->setParameter('val', $value)
-    //            ->orderBy('t.id', 'ASC')
+    //            ->orderBy('c.id', 'ASC')
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?TYPEDEPRODUIT
+    //    public function findOneBySomeField($value): ?COMMANDE
     //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
+    //        return $this->createQueryBuilder('c')
+    //            ->andWhere('c.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->getQuery()
     //            ->getOneOrNullResult()

@@ -2,9 +2,9 @@
 
 namespace Entity\Outadated;
 
-use App\Repository\PRODUITRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Repository\Outadated\PRODUITRepository;
 
 #[ORM\Entity(repositoryClass: PRODUITRepository::class)]
 class PRODUIT

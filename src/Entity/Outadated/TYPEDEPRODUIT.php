@@ -2,8 +2,8 @@
 
 namespace Entity\Outadated;
 
-use App\Repository\TYPEDEPRODUITRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Repository\Outadated\TYPEDEPRODUITRepository;
 
 #[ORM\Entity(repositoryClass: TYPEDEPRODUITRepository::class)]
 class TYPEDEPRODUIT

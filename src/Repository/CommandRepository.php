@@ -2,39 +2,39 @@
 
 namespace App\Repository;
 
+use App\Entity\Command;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Entity\Outadated\ADMINISTRATEUR;
 
 /**
- * @extends ServiceEntityRepository<ADMINISTRATEUR>
+ * @extends ServiceEntityRepository<Command>
  */
-class ADMINISTRATEURRepository extends ServiceEntityRepository
+class CommandRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, ADMINISTRATEUR::class);
+        parent::__construct($registry, Command::class);
     }
 
     //    /**
-    //     * @return ADMINISTRATEUR[] Returns an array of ADMINISTRATEUR objects
+    //     * @return Command[] Returns an array of Command objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
+    //        return $this->createQueryBuilder('c')
+    //            ->andWhere('c.exampleField = :val')
     //            ->setParameter('val', $value)
-    //            ->orderBy('a.id', 'ASC')
+    //            ->orderBy('c.id', 'ASC')
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?ADMINISTRATEUR
+    //    public function findOneBySomeField($value): ?Command
     //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
+    //        return $this->createQueryBuilder('c')
+    //            ->andWhere('c.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->getQuery()
     //            ->getOneOrNullResult()

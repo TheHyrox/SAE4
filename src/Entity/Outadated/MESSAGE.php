@@ -2,9 +2,9 @@
 
 namespace Entity\Outadated;
 
-use App\Repository\MESSAGERepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Repository\Outadated\MESSAGERepository;
 
 #[ORM\Entity(repositoryClass: MESSAGERepository::class)]
 class MESSAGE

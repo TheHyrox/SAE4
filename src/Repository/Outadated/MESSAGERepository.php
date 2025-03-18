@@ -1,40 +1,40 @@
 <?php
 
-namespace App\Repository;
+namespace Repository\Outadated;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Entity\Outadated\STATUT;
+use Entity\Outadated\MESSAGE;
 
 /**
- * @extends ServiceEntityRepository<STATUT>
+ * @extends ServiceEntityRepository<MESSAGE>
  */
-class STATUTRepository extends ServiceEntityRepository
+class MESSAGERepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, STATUT::class);
+        parent::__construct($registry, MESSAGE::class);
     }
 
 //    /**
-//     * @return STATUT[] Returns an array of STATUT objects
+//     * @return MESSAGE[] Returns an array of MESSAGE objects
 //     */
 //    public function findByExampleField($value): array
 //    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
+//        return $this->createQueryBuilder('m')
+//            ->andWhere('m.exampleField = :val')
 //            ->setParameter('val', $value)
-//            ->orderBy('s.id', 'ASC')
+//            ->orderBy('m.id', 'ASC')
 //            ->setMaxResults(10)
 //            ->getQuery()
 //            ->getResult()
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?STATUT
+//    public function findOneBySomeField($value): ?MESSAGE
 //    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
+//        return $this->createQueryBuilder('m')
+//            ->andWhere('m.exampleField = :val')
 //            ->setParameter('val', $value)
 //            ->getQuery()
 //            ->getOneOrNullResult()

@@ -1,40 +1,40 @@
 <?php
 
-namespace App\Repository;
+namespace Repository\Outadated;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Entity\Outadated\PRODUIT;
+use Entity\Outadated\STATUT;
 
 /**
- * @extends ServiceEntityRepository<PRODUIT>
+ * @extends ServiceEntityRepository<STATUT>
  */
-class PRODUITRepository extends ServiceEntityRepository
+class STATUTRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, PRODUIT::class);
+        parent::__construct($registry, STATUT::class);
     }
 
 //    /**
-//     * @return PRODUIT[] Returns an array of PRODUIT objects
+//     * @return STATUT[] Returns an array of STATUT objects
 //     */
 //    public function findByExampleField($value): array
 //    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
+//        return $this->createQueryBuilder('s')
+//            ->andWhere('s.exampleField = :val')
 //            ->setParameter('val', $value)
-//            ->orderBy('p.id', 'ASC')
+//            ->orderBy('s.id', 'ASC')
 //            ->setMaxResults(10)
 //            ->getQuery()
 //            ->getResult()
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?PRODUIT
+//    public function findOneBySomeField($value): ?STATUT
 //    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
+//        return $this->createQueryBuilder('s')
+//            ->andWhere('s.exampleField = :val')
 //            ->setParameter('val', $value)
 //            ->getQuery()
 //            ->getOneOrNullResult()

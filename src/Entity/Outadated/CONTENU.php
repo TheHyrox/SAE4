@@ -2,8 +2,8 @@
 
 namespace Entity\Outadated;
 
-use App\Repository\CONTENURepository;
 use Doctrine\ORM\Mapping as ORM;
+use Repository\Outadated\CONTENURepository;
 
 #[ORM\Entity(repositoryClass: CONTENURepository::class)]
 class CONTENU

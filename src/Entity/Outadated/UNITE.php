@@ -2,8 +2,8 @@
 
 namespace Entity\Outadated;
 
-use App\Repository\UNITERepository;
 use Doctrine\ORM\Mapping as ORM;
+use Repository\Outadated\UNITERepository;
 
 #[ORM\Entity(repositoryClass: UNITERepository::class)]
 class UNITE

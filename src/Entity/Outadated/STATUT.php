@@ -2,8 +2,8 @@
 
 namespace Entity\Outadated;
 
-use App\Repository\STATUTRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Repository\Outadated\STATUTRepository;
 
 #[ORM\Entity(repositoryClass: STATUTRepository::class)]
 class STATUT

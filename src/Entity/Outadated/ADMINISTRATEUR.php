@@ -2,8 +2,8 @@
 
 namespace Entity\Outadated;
 
-use App\Repository\ADMINISTRATEURRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Repository\Outadated\ADMINISTRATEURRepository;
 
 #[ORM\Entity(repositoryClass: ADMINISTRATEURRepository::class)]
 class ADMINISTRATEUR

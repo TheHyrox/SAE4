@@ -2,39 +2,39 @@
 
 namespace App\Repository;
 
+use App\Entity\TypeProfession;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Entity\Outadated\PRODUCTEUR;
 
 /**
- * @extends ServiceEntityRepository<PRODUCTEUR>
+ * @extends ServiceEntityRepository<TypeProfession>
  */
-class PRODUCTEURRepository extends ServiceEntityRepository
+class TypeProfessionRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, PRODUCTEUR::class);
+        parent::__construct($registry, TypeProfession::class);
     }
 
     //    /**
-    //     * @return PRODUCTEUR[] Returns an array of PRODUCTEUR objects
+    //     * @return TypeProfession[] Returns an array of TypeProfession objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
+    //        return $this->createQueryBuilder('t')
+    //            ->andWhere('t.exampleField = :val')
     //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
+    //            ->orderBy('t.id', 'ASC')
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?PRODUCTEUR
+    //    public function findOneBySomeField($value): ?TypeProfession
     //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
+    //        return $this->createQueryBuilder('t')
+    //            ->andWhere('t.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->getQuery()
     //            ->getOneOrNullResult()

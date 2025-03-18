@@ -1,40 +1,40 @@
 <?php
 
-namespace App\Repository;
+namespace Repository\Outadated;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Entity\Outadated\UTILISATEUR;
+use Entity\Outadated\PRODUCTEUR;
 
 /**
- * @extends ServiceEntityRepository<UTILISATEUR>
+ * @extends ServiceEntityRepository<PRODUCTEUR>
  */
-class UTILISATEURRepository extends ServiceEntityRepository
+class PRODUCTEURRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, UTILISATEUR::class);
+        parent::__construct($registry, PRODUCTEUR::class);
     }
 
     //    /**
-    //     * @return UTILISATEUR[] Returns an array of UTILISATEUR objects
+    //     * @return PRODUCTEUR[] Returns an array of PRODUCTEUR objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
+    //        return $this->createQueryBuilder('p')
+    //            ->andWhere('p.exampleField = :val')
     //            ->setParameter('val', $value)
-    //            ->orderBy('u.id', 'ASC')
+    //            ->orderBy('p.id', 'ASC')
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?UTILISATEUR
+    //    public function findOneBySomeField($value): ?PRODUCTEUR
     //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
+    //        return $this->createQueryBuilder('p')
+    //            ->andWhere('p.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->getQuery()
     //            ->getOneOrNullResult()

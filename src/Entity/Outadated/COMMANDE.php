@@ -2,8 +2,8 @@
 
 namespace Entity\Outadated;
 
-use App\Repository\COMMANDERepository;
 use Doctrine\ORM\Mapping as ORM;
+use Repository\Outadated\COMMANDERepository;
 
 #[ORM\Entity(repositoryClass: COMMANDERepository::class)]
 class COMMANDE
