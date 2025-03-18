@@ -2,9 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use Entity\Outadated\PRODUCTEUR;
-use Entity\Outadated\UTILISATEUR;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -16,21 +15,12 @@ final class HomeController extends AbstractController
     {
         $queryBuilder = $entityManager->createQueryBuilder();
         $queryBuilder
-            ->select('u', 'p')
-            ->from(UTILISATEUR::class, 'u')
-            ->innerJoin(PRODUCTEUR::class, 'p', 'WITH', 'u.id = p.Id_Uti');
+            ->select('u')
+            ->from(User::class, 'u')
+            ->where('u.roles LIKE :role')
+            ->setParameter('role', '%ROLE_PRODUCTEUR%');
 
-        $results = $queryBuilder->getQuery()->getResult();
-
-        $producteurs = [];
-        foreach ($results as $result) {
-            if ($result instanceof UTILISATEUR) {
-                $producteurs[] = [
-                    'utilisateur' => $result,
-                    'producteur' => $result->getProducteur(),
-                ];
-            }
-        }
+        $producteurs = $queryBuilder->getQuery()->getResult();
 
         return $this->render('home/index.html.twig', [
             'producteurs' => $producteurs,
