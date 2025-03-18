@@ -71,16 +71,23 @@
         <div class="row">
             {% for producteur in producteurs %}
                 <div class="col-md-3 mb-4">
-                    <a href="{{ path('app_producteur', {id: producteur.producteur.id}) }}" class="link-offset-2 link-underline link-underline-opacity-0">
+                    <a href="{{ path('app_producteur', {id: producteur.id}) }}" class="link-offset-2 link-underline link-underline-opacity-0">
                         <div class="card shadow-sm">
                             <div class="card-header bg-success text-white text-center">
-                                <h5 class="mb-0">{{ producteur.utilisateur.Prenom_Uti }} {{ producteur.utilisateur.Nom_Uti }}</h5>
+                                <h5 class="mb-0">{{ producteur.firstName }} {{ producteur.name }}</h5>
                             </div>
-                            <img src="{{ asset('images/producteur_' ~ producteur.producteur.id) }}" class="card-img-top" alt="Photo de {{ producteur.utilisateur.Prenom_Uti }}">
+                            <img src="{{ asset('images/producteur_' ~ producteur.id) }}" class="card-img-top" alt="Photo de {{ producteur.name }}">
                             <div class="card-body text-center">
-                                <h6 class="card-title">{{ producteur.producteur.Prof_Prod }}</h6>
-                                <p class="card-text">
-                                    {{ producteur.utilisateur.Adr_Uti }}
+                                <h6 class="card-title">
+                                    {% if producteur.profession is defined and producteur.profession %}
+                                        {{ producteur.profession.name }}
+                                    {% elseif producteur.typeProfession is defined and producteur.typeProfession %}
+                                        {{ producteur.typeProfession.name }}
+                                    {% else %}
+                                        Profession non définie
+                                    {% endif %}
+                                </h6>                              <p class="card-text">
+                                    <h6>Address</h6>
                                 </p>
                             </div>
                         </div>
