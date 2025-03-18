@@ -1,0 +1,142 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Messagerie{% endblock %}
+
+{% block sidebar %}
+    <div class="d-flex flex-column h-100">
+        {# New Message Button #}
+        <button type="button" class="btn btn-light mb-3" data-bs-toggle="modal" data-bs-target="#newMessageModal">
+            <i class="fas fa-edit"></i> Nouveau message
+        </button>
+
+        {# Recent Contacts List #}
+        <div class="flex-grow-1 overflow-auto">
+            {% set uniqueContacts = [] %}
+            {% for message in messages %}
+                {% set contact = message.emetteur %}
+                {% if contact.id not in uniqueContacts|map(c => c.id) %}
+                    {% set uniqueContacts = uniqueContacts|merge([contact]) %}
+                    <div class="contact-item p-2 mb-2 bg-light rounded cursor-pointer" onclick="loadConversation({{ contact.id }})"><!--ATESTER-->
+                        <div class="fw-bold">{{ contact.email }}</div>
+                        {% if contact.producteur is defined and contact.producteur %}
+                            <small class="text-muted">- PRODUCTEUR<!--ACOMPLETER--></small>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    {# New Message Modal #}
+    <div class="modal fade" id="newMessageModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nouveau message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <input type="text" id="searchUser" class="form-control" placeholder="Rechercher un utilisateur...">
+                        <div id="searchResults" class="mt-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="d-flex flex-column h-100">
+        {# Chat Header #}
+        <div class="chat-header p-3 border-bottom">
+            {% if selectedUser is defined %}
+                <h5 class="m-0">
+                    {{ selectedUser.email }}
+                    {% if selectedUser.producteur is defined and selectedUser.producteur %}
+                        <small class="text-muted">- PRODUCTEUR</small>
+                    {% endif %}
+                </h5>
+            {% endif %}
+        </div>
+
+        {# Messages Container #}
+        <div class="flex-grow-1 overflow-auto p-3" id="messagesContainer" style="height: calc(100vh - 180px);">
+            {% for message in conversation|default([]) %}
+                <div class="message-bubble mb-3 {% if message.emetteur.id == app.user.id %}sent{% else %}received{% endif %}">
+                    <div class="message-content p-2 rounded">
+                        {{ message.contenuMsg|nl2br }}
+                    </div>
+                    <small class="text-muted">{{ message.dateMsg|date('H:i') }}</small>
+                </div>
+            {% endfor %}
+        </div>
+
+        {# Message Input #}
+        <div class="chat-input p-3 border-top">
+            <form method="post" action="{{ path('app_messagerie_send') }}" class="d-flex">
+                <input type="hidden" name="_token" value="{{ csrf_token('send-message') }}">
+                <input type="hidden" name="destinataire" id="destinataire" value="{{ selectedUser.id|default('') }}">
+                <input type="text" name="content" class="form-control me-2" placeholder="Votre message..." required>
+                <button type="submit" class="btn btn-primary">Envoyer</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .cursor-pointer { cursor: pointer; }
+        .message-bubble {
+            max-width: 75%;
+            margin: 8px 0;
+        }
+        .message-bubble.sent {
+            margin-left: auto;
+        }
+        .message-bubble.sent .message-content {
+            background-color: #007bff;
+            color: white;
+        }
+        .message-bubble.received .message-content {
+            background-color: #f1f1f1;
+        }
+        #messagesContainer {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0,0,0,.2) transparent;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Add user search functionality
+        const searchUser = document.getElementById('searchUser');
+        const searchResults = document.getElementById('searchResults');
+        
+        searchUser.addEventListener('input', async (e) => {
+            if (e.target.value.length < 2) return;
+            
+            try {
+                const response = await fetch(`/api/users/search?q=${e.target.value}`);
+                const users = await response.json();
+                
+                searchResults.innerHTML = users.map(user => `
+                    <div class="p-2 border-bottom cursor-pointer" onclick="selectUser(${user.id})">
+                        ${user.email} ${user.producteur ? '- PRODUCTEUR' : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error searching users:', error);
+            }
+        });
+
+        // Auto-scroll to bottom of messages
+        const messagesContainer = document.getElementById('messagesContainer');
+        if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    </script>
+{% endblock %}
