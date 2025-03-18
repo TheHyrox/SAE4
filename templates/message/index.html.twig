@@ -291,6 +291,13 @@
             const searchContainer = document.querySelector('.search-container');
             const searchResults = document.getElementById('searchResults');
             const newMessageForm = document.getElementById('newMessageForm');
+                if (newMessageForm) {
+                    newMessageForm.addEventListener('submit', function() {
+                        setTimeout(() => {
+                            setupAutoDismissAlerts();
+                        }, 500);
+                    });
+                }
             const selectedUserId = document.getElementById('selectedUserId');
             const selectedUserName = document.getElementById('selectedUserName');
             
@@ -473,6 +480,65 @@
                     clearSelectedUser();
                 });
             }
+
+            function setupAutoDismissAlerts() {
+                const alerts = document.querySelectorAll('.alert-success, .alert-info');
+                alerts.forEach(alert => {
+                    // Set a timer to dismiss the alert after 3 seconds
+                    setTimeout(() => {
+                        // Check if the alert is still in the DOM
+                        if (document.body.contains(alert)) {
+                            // Create a fading effect before removing
+                            alert.classList.remove('show');
+                            alert.classList.add('fade');
+                            
+                            // Remove the alert after the fade animation completes
+                            setTimeout(() => {
+                                if (document.body.contains(alert)) {
+                                    alert.remove();
+                                }
+                            }, 150);
+                        }
+                    }, 3000);
+                });
+            }
+
+            setupAutoDismissAlerts();
+
+            const alertObserver = new MutationObserver(mutations => {
+                mutations.forEach(mutation => {
+                    if (mutation.addedNodes && mutation.addedNodes.length > 0) {
+                        // Check each added node
+                        mutation.addedNodes.forEach(node => {
+                            // Check if the new node is an alert or contains alerts
+                            if (node.classList && node.classList.contains('alert-success')) {
+                                // Set timer directly for this node
+                                setTimeout(() => {
+                                    if (document.body.contains(node)) {
+                                        node.classList.remove('show');
+                                        setTimeout(() => {
+                                            if (document.body.contains(node)) {
+                                                node.remove();
+                                            }
+                                        }, 150);
+                                    }
+                                }, 3000);
+                            } else if (node.querySelectorAll) {
+                                // Look for alerts inside the node
+                                const nestedAlerts = node.querySelectorAll('.alert-success');
+                                if (nestedAlerts.length > 0) {
+                                    setupAutoDismissAlerts();
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            alertObserver.observe(document.body, {
+                childList: true, 
+                subtree: true
+            });
         });
     </script>
 {% endblock %}
