@@ -80,7 +80,7 @@
                     <div class="message-content p-2 rounded">
                         {{ message.content|nl2br }}
                     </div>
-                    <small class="text-muted">{{ message.sendDate|date('d/m/Y H:i') }}</small>
+                    <small class="text-muted">{{ message.sendDate|date('d-m-Y H:i:s', 'Europe/Paris') }}</small>
                 </div>
             {% else %}
                 {% if selectedUser is defined and selectedUser %}

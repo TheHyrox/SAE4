@@ -15,6 +15,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 class MessageController extends AbstractController
 {
+
+    private string $timezone;
+
+    public function __construct(string $appTimezone = 'Europe/Paris') 
+    {
+        $this->timezone = $appTimezone;
+    }
+
     #[Route('/messagerie', name: 'app_messagerie')]
     public function index(EntityManagerInterface $entityManager): Response
     {
@@ -69,8 +77,9 @@ class MessageController extends AbstractController
         }
         
         $message = new Message();
+        $now = new \DateTime('now', new \DateTimeZone($this->timezone));
         $message->setContent(htmlspecialchars($content));
-        $message->setSendDate(new \DateTime());
+        $message->setSendDate($now);
         $message->setSender($currentUser);
         $message->setRecipient($recipient);
 
