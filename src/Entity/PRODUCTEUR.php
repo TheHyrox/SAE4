@@ -9,15 +9,15 @@ use Doctrine\ORM\Mapping as ORM;
 class PRODUCTEUR
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'AUTO')]
-    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'prof_prod', type: 'string', length: 50)]
+    #[ORM\Column(length: 50)]
     private ?string $Prof_Prod = null;
 
-    #[ORM\OneToOne(targetEntity: UTILISATEUR::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(name: 'id_uti', referencedColumnName: 'id', nullable: false)]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
     private ?UTILISATEUR $Id_Uti = null;
 
     public function getId(): ?int
