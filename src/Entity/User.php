@@ -31,6 +31,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $adress = null;
+
     /**
      * @var list<string> The user roles
      */
@@ -109,6 +112,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setFirstName(string $firstName): static
     {
         $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function getadress(): ?string
+    {
+        return $this->adress;
+    }
+
+    public function setadress(string $adress): static
+    {
+        $this->adress = $adress;
 
         return $this;
     }

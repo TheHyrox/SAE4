@@ -24,22 +24,18 @@ class RegistrationFormType extends AbstractType
             ->add('email', null,[
                 'label' => 'Email'
             ])
+            ->add('adress', null,[
+                'label' => 'Adresse'
+            ])
             ->add('password', null,[
                 'label' => 'Mot de passe'
             ])
-//            ->add('roles')
-//            ->add('profession', EntityType::class, [
-//                'class' => TypeProfession::class,
-//                'choice_label' => 'id',
-//            ])
-//            ->add('messages', EntityType::class, [
-//                'class' => Message::class,
-//                'choice_label' => 'id',
-//            ])
-//            ->add('receivedMessage', EntityType::class, [
-//                'class' => Message::class,
-//                'choice_label' => 'id',
-//            ])
+            ->add('profession', EntityType::class, [
+                'class' => TypeProfession::class,
+                'choice_label' => 'name',
+                'required' => false,
+                'placeholder' => 'Choisissez une profession (optionnel)'
+            ])
         ;
     }
 
