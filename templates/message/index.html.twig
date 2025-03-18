@@ -13,13 +13,14 @@
         <div class="flex-grow-1 overflow-auto">
             {% set uniqueContacts = [] %}
             {% for message in messages %}
-                {% set contact = message.emetteur %}
+                {% set contact = message.sender.id == app.user.id ? message.recipient : message.sender %}
                 {% if contact.id not in uniqueContacts|map(c => c.id) %}
                     {% set uniqueContacts = uniqueContacts|merge([contact]) %}
-                    <div class="contact-item p-2 mb-2 bg-light rounded cursor-pointer" onclick="loadConversation({{ contact.id }})"><!--ATESTER-->
+                    <div class="contact-item p-2 mb-2 bg-light rounded cursor-pointer" onclick="loadConversation({{ contact.id }})">
                         <div class="fw-bold">{{ contact.email }}</div>
-                        {% if contact.producteur is defined and contact.producteur %}
-                            <small class="text-muted">- PRODUCTEUR<!--ACOMPLETER--></small>
+                        <div class="small text-truncate">{{ contact.firstName }} {{ contact.name }}</div>
+                        {% if contact.profession %}
+                            <small class="text-muted">- {{ contact.profession.name }}</small>
                         {% endif %}
                     </div>
                 {% endif %}
@@ -40,6 +41,15 @@
                         <input type="text" id="searchUser" class="form-control" placeholder="Rechercher un utilisateur...">
                         <div id="searchResults" class="mt-2"></div>
                     </div>
+                    <form id="newMessageForm" method="post" action="{{ path('app_messagerie_send') }}" class="d-none">
+                        <input type="hidden" name="_token" value="{{ csrf_token('send-message') }}">
+                        <input type="hidden" name="destinataire" id="selectedUserId" value="">
+                        <div class="mb-3">
+                            <label for="newMessageContent" class="form-label">Message pour <span id="selectedUserName"></span></label>
+                            <textarea name="content" id="newMessageContent" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Envoyer</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -50,33 +60,43 @@
     <div class="d-flex flex-column h-100">
         {# Chat Header #}
         <div class="chat-header p-3 border-bottom">
-            {% if selectedUser is defined %}
+            {% if selectedUser is defined and selectedUser %}
                 <h5 class="m-0">
-                    {{ selectedUser.email }}
-                    {% if selectedUser.producteur is defined and selectedUser.producteur %}
-                        <small class="text-muted">- PRODUCTEUR</small>
+                    {{ selectedUser.firstName }} {{ selectedUser.name }}
+                    <span class="text-muted">({{ selectedUser.email }})</span>
+                    {% if selectedUser.profession %}
+                        <small class="text-muted">- {{ selectedUser.profession.name }}</small>
                     {% endif %}
                 </h5>
+            {% else %}
+                <h5 class="m-0 text-muted">Sélectionnez un contact pour démarrer une conversation</h5>
             {% endif %}
         </div>
 
         {# Messages Container #}
         <div class="flex-grow-1 overflow-auto p-3" id="messagesContainer" style="height: calc(100vh - 180px);">
             {% for message in conversation|default([]) %}
-                <div class="message-bubble mb-3 {% if message.emetteur.id == app.user.id %}sent{% else %}received{% endif %}">
+                <div class="message-bubble mb-3 {% if message.sender.id == app.user.id %}sent{% else %}received{% endif %}">
                     <div class="message-content p-2 rounded">
-                        {{ message.contenuMsg|nl2br }}
+                        {{ message.content|nl2br }}
                     </div>
-                    <small class="text-muted">{{ message.dateMsg|date('H:i') }}</small>
+                    <small class="text-muted">{{ message.sentAt|date('d/m/Y H:i') }}</small>
                 </div>
+            {% else %}
+                {% if selectedUser is defined and selectedUser %}
+                    <div class="text-center text-muted my-5">
+                        <p>Aucun message dans cette conversation.</p>
+                        <p>Envoyez un message pour démarrer la conversation.</p>
+                    </div>
+                {% endif %}
             {% endfor %}
         </div>
 
         {# Message Input #}
-        <div class="chat-input px-3 pt-3 border-top">
+        <div class="chat-input px-3 pt-3 border-top {% if selectedUser is not defined or not selectedUser %}d-none{% endif %}">
             <form method="post" action="{{ path('app_messagerie_send') }}" class="d-flex">
                 <input type="hidden" name="_token" value="{{ csrf_token('send-message') }}">
-                <input type="hidden" name="destinataire" id="destinataire" value="{{ selectedUser.id|default('') }}">
+                <input type="hidden" name="destinataire" value="{{ selectedUser.id|default('') }}">
                 <input type="text" name="content" class="form-control me-2" placeholder="Votre message..." required>
                 <button type="submit" class="btn" style="background-color: white; color:black">Envoyer</button>
             </form>
@@ -106,6 +126,21 @@
             scrollbar-width: thin;
             scrollbar-color: rgba(0,0,0,.2) transparent;
         }
+        .contact-item:hover {
+            background-color: #e9ecef !important;
+        }
+        .contact-item.active {
+            background-color: #cfe2ff !important;
+            border-left: 3px solid #0d6efd;
+        }
+        .unread-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #0d6efd;
+            display: inline-block;
+            margin-right: 5px;
+        }
     </style>
 {% endblock %}
 
@@ -115,28 +150,71 @@
         // Add user search functionality
         const searchUser = document.getElementById('searchUser');
         const searchResults = document.getElementById('searchResults');
+        const newMessageForm = document.getElementById('newMessageForm');
+        const selectedUserId = document.getElementById('selectedUserId');
+        const selectedUserName = document.getElementById('selectedUserName');
         
         searchUser.addEventListener('input', async (e) => {
-            if (e.target.value.length < 2) return;
+            if (e.target.value.length < 2) {
+                searchResults.innerHTML = '';
+                newMessageForm.classList.add('d-none');
+                return;
+            }
             
             try {
                 const response = await fetch(`/api/users/search?q=${e.target.value}`);
                 const users = await response.json();
                 
+                if (users.length === 0) {
+                    searchResults.innerHTML = '<div class="p-2 text-muted">Aucun utilisateur trouvé</div>';
+                    newMessageForm.classList.add('d-none');
+                    return;
+                }
+                
                 searchResults.innerHTML = users.map(user => `
-                    <div class="p-2 border-bottom cursor-pointer" onclick="selectUser(${user.id})">
-                        ${user.email} ${user.producteur ? '- PRODUCTEUR' : ''}
+                    <div class="p-2 border-bottom cursor-pointer" onclick="selectUser(${user.id}, '${user.name}', '${user.email}')">
+                        <div>${user.email}</div>
+                        <small>${user.name} ${user.isProducer ? '- Producteur' : ''}</small>
                     </div>
                 `).join('');
             } catch (error) {
                 console.error('Error searching users:', error);
+                searchResults.innerHTML = '<div class="p-2 text-danger">Erreur lors de la recherche</div>';
             }
         });
+        
+        function selectUser(id, name, email) {
+            selectedUserId.value = id;
+            selectedUserName.textContent = `${name} (${email})`;
+            newMessageForm.classList.remove('d-none');
+            searchResults.innerHTML = '';
+            searchUser.value = '';
+        }
+        
+        // Function to load conversation
+        function loadConversation(userId) {
+            window.location.href = `/messagerie/${userId}`;
+        }
 
         // Auto-scroll to bottom of messages
         const messagesContainer = document.getElementById('messagesContainer');
         if (messagesContainer) {
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
+        
+        // Highlight active contact
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = window.location.pathname.split('/').pop();
+            
+            if (userId && !isNaN(userId)) {
+                const contactItems = document.querySelectorAll('.contact-item');
+                contactItems.forEach(item => {
+                    if (item.getAttribute('onclick').includes(userId)) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+        });
     </script>
 {% endblock %}
