@@ -8,25 +8,43 @@
         <div class="row">
             {% for producteur in producteurs %}
                 <div class="col-md-4 mb-4">
-                    <a href="{{ path('app_producteur', {id: producteur.id}) }}" class="link-offset-2 link-underline link-underline-opacity-0">
-                        <div class="card shadow-sm">
-                            <div class="card-header bg-success text-white text-center">
-                                <h5 class="mb-0">{{ producteur.firstName }} {{ producteur.name }}</h5>
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-success text-white text-center">
+                            <h5 class="mb-0">{{ producteur.firstName }} {{ producteur.name }}</h5>
+                        </div>
+                        <img src="{{ asset('images/producteur_' ~ producteur.id) }}" class="card-img-top" alt="Photo de {{ producteur.name }}">
+                        <div class="card-body text-center">
+                            <h6 class="card-title">
+                                {% if producteur.profession is defined and producteur.profession %}
+                                    {{ producteur.profession.name }}
+                                {% else %}
+                                    Profession non définie
+                                {% endif %}
+                            </h6>                              <p class="card-text">
+                            <h6>{{ producteur.address }}</h6>
+                            </p>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal{{ producteur.id }}">Supprimez le compte</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="deleteAccountModal{{ producteur.id }}" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="deleteAccountModalTitle">Confirmer la suppression</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <img src="{{ asset('images/producteur_' ~ producteur.id) }}" class="card-img-top" alt="Photo de {{ producteur.name }}">
-                            <div class="card-body text-center">
-                                <h6 class="card-title">
-                                    {% if producteur.profession is defined and producteur.profession %}
-                                        {{ producteur.profession.name }}
-                                    {% else %}
-                                        Profession non définie
-                                    {% endif %}
-                                </h6>                              <p class="card-text">
-                                <h6>{{ producteur.address }}</h6>
-                                </p>
+                            <div class="modal-body">
+                                Êtes-vous sûr de vouloir supprimer le compte de <strong>{{ producteur.name }} {{ producteur.firstName }}</strong>?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                <a href="{{ path('delete_account', {id:producteur.id}) }}" class="btn btn-danger">Supprimer</a>
                             </div>
                         </div>
-                    </a>
+                    </div>
                 </div>
             {% else %}
                 <p class="text-center">Aucun producteur trouvé.</p>
@@ -46,6 +64,26 @@
                         <p class="card-text">
                             <h6>{{ user.address }}</h6>
                         </p>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal{{ user.id }}"">Supprimez le compte</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="deleteAccountModal{{ user.id }}" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="deleteAccountModalTitle">Confirmer la suppression</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Êtes-vous sûr de vouloir supprimer le compte de <strong>{{ user.name }} {{ user.firstName }}</strong>?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <a href="{{ path('delete_account', {id:user.id}) }}" class="btn btn-danger">Supprimer</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -53,4 +91,5 @@
             <p class="text-center">Aucun utilisateur trouvé.</p>
         {% endfor %}
     </div>
+
 {% endblock %}

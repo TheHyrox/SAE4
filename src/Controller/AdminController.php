@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -38,5 +39,22 @@ final class AdminController extends AbstractController
             'producteurs' => $producteurs,
             'users' => $users,
         ]);
+    }
+
+    #[Route('/admin/panel/{id}', name: 'delete_account')]
+    public function deleteAccount(int $id, EntityManagerInterface $entityManager): Response
+    {
+        $user = $entityManager->getRepository(User::class)->find($id);
+
+        if ($user) {
+            $entityManager->remove($user);
+            $entityManager->flush();
+
+            $this->addFlash('danger', 'Le compte a bien été supprimé.');
+        } else {
+            $this->addFlash('warning', 'Utilisateur non trouvé.');
+        }
+
+        return $this->redirectToRoute('admin_panel');
     }
 }
