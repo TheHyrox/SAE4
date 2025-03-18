@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints\Unique;
@@ -26,6 +28,33 @@ class User
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
+
+    /**
+     * @var Collection<int, Product>
+     */
+    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'user')]
+    private Collection $products;
+
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    private ?TypeProfession $profession = null;
+
+    #[ORM\OneToOne(mappedBy: 'sender', cascade: ['persist', 'remove'])]
+    private ?Message $messages = null;
+
+    #[ORM\OneToOne(mappedBy: 'recipient', cascade: ['persist', 'remove'])]
+    private ?Message $receivedMessage = null;
+
+    /**
+     * @var Collection<int, Command>
+     */
+    #[ORM\OneToMany(targetEntity: Command::class, mappedBy: 'customer')]
+    private Collection $commands;
+
+    public function __construct()
+    {
+        $this->products = new ArrayCollection();
+        $this->commands = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -76,6 +105,112 @@ class User
     public function setPassword(string $password): static
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Product>
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Product $product): static
+    {
+        if (!$this->products->contains($product)) {
+            $this->products->add($product);
+            $product->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product): static
+    {
+        if ($this->products->removeElement($product)) {
+            // set the owning side to null (unless already changed)
+            if ($product->getUser() === $this) {
+                $product->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getProfession(): ?TypeProfession
+    {
+        return $this->profession;
+    }
+
+    public function setProfession(?TypeProfession $profession): static
+    {
+        $this->profession = $profession;
+
+        return $this;
+    }
+
+    public function getMessages(): ?Message
+    {
+        return $this->messages;
+    }
+
+    public function setMessages(Message $messages): static
+    {
+        // set the owning side of the relation if necessary
+        if ($messages->getSender() !== $this) {
+            $messages->setSender($this);
+        }
+
+        $this->messages = $messages;
+
+        return $this;
+    }
+
+    public function getReceivedMessage(): ?Message
+    {
+        return $this->receivedMessage;
+    }
+
+    public function setReceivedMessage(Message $receivedMessage): static
+    {
+        // set the owning side of the relation if necessary
+        if ($receivedMessage->getRecipient() !== $this) {
+            $receivedMessage->setRecipient($this);
+        }
+
+        $this->receivedMessage = $receivedMessage;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Command>
+     */
+    public function getCommands(): Collection
+    {
+        return $this->commands;
+    }
+
+    public function addCommand(Command $command): static
+    {
+        if (!$this->commands->contains($command)) {
+            $this->commands->add($command);
+            $command->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommand(Command $command): static
+    {
+        if ($this->commands->removeElement($command)) {
+            // set the owning side to null (unless already changed)
+            if ($command->getCustomer() === $this) {
+                $command->setCustomer(null);
+            }
+        }
 
         return $this;
     }

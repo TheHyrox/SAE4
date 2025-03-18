@@ -20,6 +20,14 @@ class Message
     #[ORM\Column(length: 2048)]
     private ?string $content = null;
 
+    #[ORM\OneToOne(inversedBy: 'messages', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $sender = null;
+
+    #[ORM\OneToOne(inversedBy: 'receivedMessage', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $recipient = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -45,6 +53,30 @@ class Message
     public function setContent(string $content): static
     {
         $this->content = $content;
+
+        return $this;
+    }
+
+    public function getSender(): ?User
+    {
+        return $this->sender;
+    }
+
+    public function setSender(User $sender): static
+    {
+        $this->sender = $sender;
+
+        return $this;
+    }
+
+    public function getRecipient(): ?User
+    {
+        return $this->recipient;
+    }
+
+    public function setRecipient(User $recipient): static
+    {
+        $this->recipient = $recipient;
 
         return $this;
     }
