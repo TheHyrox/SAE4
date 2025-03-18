@@ -17,8 +17,9 @@ final class HomeController extends AbstractController
         $queryBuilder
             ->select('u')
             ->from(User::class, 'u')
-            ->where('u.roles LIKE :role')
-            ->setParameter('role', '%ROLE_PRODUCTEUR%');
+            ->where('u.roles LIKE :role AND u.roles NOT LIKE :role2')
+            ->setParameter('role', '%ROLE_PRODUCTEUR%')
+            ->setParameter('role2', '%ROLE_ADMIN%');
 
         $producteurs = $queryBuilder->getQuery()->getResult();
 
@@ -34,8 +35,9 @@ final class HomeController extends AbstractController
         $queryBuilder
             ->select('u')
             ->from(User::class, 'u')
-            ->where('u.roles LIKE :role')
-            ->setParameter('role', '%ROLE_PRODUCTEUR%');
+            ->where('u.roles LIKE :role AND u.roles NOT LIKE :role2')
+            ->setParameter('role', '%ROLE_PRODUCTEUR%')
+            ->setParameter('role2', '%ROLE_ADMIN%');
 
         $producteurs = $queryBuilder->getQuery()->getResult();
 
@@ -69,8 +71,9 @@ final class HomeController extends AbstractController
         $queryBuilder
             ->select('u')
             ->from(User::class, 'u')
-            ->where('u.roles LIKE :role')
-            ->setParameter('role', '%ROLE_PRODUCTEUR%');
+            ->where('u.roles LIKE :role AND u.roles NOT LIKE :role2')
+            ->setParameter('role', '%ROLE_PRODUCTEUR%')
+            ->setParameter('role2', '%ROLE_ADMIN%');
 
         $producteurs = $queryBuilder->getQuery()->getResult();
 
