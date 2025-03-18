@@ -74,22 +74,24 @@
         </div>
 
         {# Messages Container #}
-        <div class="flex-grow-1 overflow-auto p-3" id="messagesContainer" style="height: calc(100vh - 180px); color:white">
-            {% for message in conversation|default([]) %}
-                <div class="message-bubble mb-3 {% if message.sender.id == app.user.id %}sent{% else %}received{% endif %}" style="width: 40%;">
-                    <div class="message-content p-2 rounded" style="background-color: #659D31;">
-                        {{ message.content|nl2br }}
+        <div class="flex-grow-1 overflow-auto p-3" id="messagesContainer">
+            <div class="messages-wrapper">
+                {% for message in conversation|default([]) %}
+                    <div class="message-bubble mb-3 {% if message.sender.id == app.user.id %}sent{% else %}received{% endif %}" style="width: 40%; color: white">
+                        <div class="message-content p-2 rounded" style="background-color: #659D31;">
+                            {{ message.content|nl2br }}
+                        </div>
+                        <small class="text-muted">{{ message.sendDate|date('d-m-Y H:i:s', 'Europe/Paris') }}</small>
                     </div>
-                    <small class="text-muted">{{ message.sendDate|date('d-m-Y H:i:s', 'Europe/Paris') }}</small>
-                </div>
-            {% else %}
-                {% if selectedUser is defined and selectedUser %}
-                    <div class="text-center text-muted my-5">
-                        <p>Aucun message dans cette conversation.</p>
-                        <p>Envoyez un message pour démarrer la conversation.</p>
-                    </div>
-                {% endif %}
-            {% endfor %}
+                {% else %}
+                    {% if selectedUser is defined and selectedUser %}
+                        <div class="text-center text-muted my-5">
+                            <p>Aucun message dans cette conversation.</p>
+                            <p>Envoyez un message pour démarrer la conversation.</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
         </div>
 
         {# Message Input #}
@@ -111,6 +113,8 @@
         .message-bubble {
             max-width: 75%;
             margin: 8px 0;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
         .message-bubble.sent {
             margin-left: auto;
@@ -122,10 +126,24 @@
         .message-bubble.received .message-content {
             background-color: #f1f1f1;
         }
+        .messages-wrapper {
+            margin-top: auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
         #messagesContainer {
             scrollbar-width: thin;
             scrollbar-color: rgba(0,0,0,.2) transparent;
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: calc(100vh - 180px);
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
+
         .contact-item:hover {
             background-color: #e9ecef !important;
         }
@@ -196,21 +214,26 @@
             window.location.href = `/messagerie/${userId}`;
         }
 
-        function scrollToBottom() {
-            const messagesContainer = document.getElementById('messagesContainer');
-            if (messagesContainer) {
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
-        }
         
         // Highlight active contact
         document.addEventListener('DOMContentLoaded', function() {
 
-            scrollToBottom();
-
-            [50, 100, 500, 1000].forEach(delay => {
-                setTimeout(scrollToBottom, delay);
-            });
+            function scrollMessagesToBottom() {
+                const messagesContainer = document.getElementById('messagesContainer');
+                if (messagesContainer) {
+                    // Force a reflow to ensure correct scrollHeight
+                    void messagesContainer.offsetHeight;
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+            }
+            scrollMessagesToBottom();
+            setTimeout(scrollMessagesToBottom, 100);
+            const messagesContainer = document.getElementById('messagesContainer');
+            if (messagesContainer) {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+            
+            // Existing DOMContentLoaded code...
             const urlParams = new URLSearchParams(window.location.search);
             const userId = window.location.pathname.split('/').pop();
             
