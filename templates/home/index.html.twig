@@ -1,20 +1,31 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}Liste des Producteurs{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/Matthis/Documents/GitHub/SAE4/src/Controller/HomeController.php</code></li>
-        <li>Your template at <code>C:/Users/Matthis/Documents/GitHub/SAE4/templates/home/index.html.twig</code></li>
-    </ul>
-</div>
+    <div class="container">
+        <h1 class="my-3 text-center">Producteurs</h1>
+        <div class="row">
+            {% for producteur in producteurs %}
+                <div class="col-md-3 mb-4">
+                    <a href="{{ path('app_producteur', {id: producteur.producteur.id}) }}" class="link-offset-2 link-underline link-underline-opacity-0">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-success text-white text-center">
+                                <h5 class="mb-0">{{ producteur.utilisateur.Prenom_Uti }} {{ producteur.utilisateur.Nom_Uti }}</h5>
+                            </div>
+                            <img src="{{ asset('images/producteur_' ~ producteur.producteur.id) }}" class="card-img-top" alt="Photo de {{ producteur.utilisateur.Prenom_Uti }}">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">{{ producteur.producteur.Prof_Prod }}</h6>
+                                <p class="card-text">
+                                    {{ producteur.utilisateur.Adr_Uti }}
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% else %}
+            {% endfor %}
+            <p class="text-center">Aucun producteur trouvé.</p>
+        </div>
+    </div>
 {% endblock %}
