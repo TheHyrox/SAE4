@@ -148,21 +148,19 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-black" href="{{ path('app_achats') }}">Achats</a>
                                 </li>
-                    
-                                {# Check if user is a PRODUCTEUR #}
-                                {% if app.user.producteur is defined and app.user.producteur is not null %}
+
+                                {% if is_granted('ROLE_PRODUCTEUR') %}
                                     <li class="vr" style="background-color: #659D31; width: 2px; height: 40px;"></li>
                                     <li class="nav-item">
-                                        <a class="nav-link text-black" href="{{ path('app_produits') }}">Produits</a>
+                                        <a class="nav-link text-black" href="{{ path('app_produits', {id: app.user.id}) }}">Produits</a>
                                     </li>
                                     <li class="vr" style="background-color: #659D31; width: 2px; height: 40px;"></li>
                                     <li class="nav-item">
                                         <a class="nav-link text-black" href="{{ path('app_commandes') }}">Commandes</a>
                                     </li>
                                 {% endif %}
-                    
-                                {# Check if user is an ADMINISTRATEUR #}
-                                {% if app.user.administrateur is defined and app.user.administrateur is not null %}
+
+                                {% if is_granted('ROLE_ADMIN') %}
                                     <li class="vr" style="background-color: #659D31; width: 2px; height: 40px;"></li>
                                     <li class="nav-item">
                                         <a class="nav-link text-black" href="{{ path('admin_panel') }}">Panneau Administrateur</a>
