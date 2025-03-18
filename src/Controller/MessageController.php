@@ -28,8 +28,8 @@ class MessageController extends AbstractController
             ->createQueryBuilder('u')
             //->where('u.id != :currentUserId')
             //->setParameter('currentUserId', $user->getId())
-            ->getQuery()
-            ->getResult();
+            ->getQuery();
+            //->getResult();
 
         return $this->render('message/index.html.twig', [
             'messages' => $messages,
