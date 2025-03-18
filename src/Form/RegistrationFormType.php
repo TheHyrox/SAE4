@@ -2,10 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\ADMINISTRATEUR;
-use App\Entity\PRODUCTEUR;
-use App\Entity\UTILISATEUR;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Entity\Outadated\UTILISATEUR;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace Entity\Outadated;
 
 use App\Repository\TYPEDEPRODUITRepository;
 use Doctrine\ORM\Mapping as ORM;

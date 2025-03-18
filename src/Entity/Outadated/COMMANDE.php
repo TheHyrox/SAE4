@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace Entity\Outadated;
 
 use App\Repository\COMMANDERepository;
 use Doctrine\ORM\Mapping as ORM;

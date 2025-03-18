@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace Entity\Outadated;
 
 use App\Repository\PRODUITRepository;
 use Doctrine\DBAL\Types\Types;

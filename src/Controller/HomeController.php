@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\PRODUCTEUR;
-use App\Entity\UTILISATEUR;
 use Doctrine\ORM\EntityManagerInterface;
+use Entity\Outadated\PRODUCTEUR;
+use Entity\Outadated\UTILISATEUR;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;

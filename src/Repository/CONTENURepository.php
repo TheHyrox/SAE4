@@ -2,9 +2,9 @@
 
 namespace App\Repository;
 
-use App\Entity\CONTENU;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Entity\Outadated\CONTENU;
 
 /**
  * @extends ServiceEntityRepository<CONTENU>

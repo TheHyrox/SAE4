@@ -2,9 +2,9 @@
 
 namespace App\Repository;
 
-use App\Entity\UNITE;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Entity\Outadated\UNITE;
 
 /**
  * @extends ServiceEntityRepository<UNITE>
