@@ -23,6 +23,9 @@ class Command
      * @var Collection<int, Product>
      */
     #[ORM\ManyToMany(targetEntity: Product::class, inversedBy: 'commands')]
+    #[ORM\JoinTable(name: 'command_product')]
+    #[ORM\JoinColumn(name: 'command_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'product_id', referencedColumnName: 'id')]
     private Collection $products;
 
     #[ORM\ManyToOne(inversedBy: 'commands')]
@@ -36,6 +39,7 @@ class Command
     public function __construct()
     {
         $this->products = new ArrayCollection();
+        $this->date = new \DateTime();
     }
 
     public function getId(): ?int

@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Commandes{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-4">Mes Commandes</h1>
+        
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+        
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+        
+        {% if commandsData|length > 0 %}
+            <div class="row">
+                {% for commandData in commandsData %}
+                    {% set command = commandData.command %}
+                    <div class="col-md-12 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Commande #{{ command.id }}</h5>
+                                <span class="badge 
+                                    {% if command.status.id == 1 %}bg-warning
+                                    {% elseif command.status.id == 2 %}bg-info
+                                    {% elseif command.status.id == 3 %}bg-primary
+                                    {% elseif command.status.id == 4 %}bg-success
+                                    {% elseif command.status.id == 5 %}bg-danger
+                                    {% endif %}">
+                                    {{ command.status.name }}
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Date :</strong> {{ command.date|date('d/m/Y H:i:s') }}</p>
+                                
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Produit</th>
+                                                <th>Quantité</th>
+                                                <th>Prix unitaire</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% set totalCommand = 0 %}
+                                            {% for productData in commandData.products %}
+                                                {% set product = productData.product %}
+                                                {% set quantity = productData.quantity %}
+                                                {% set total = productData.total %}
+                                                {% set totalCommand = totalCommand + total %}
+                                                <tr>
+                                                    <td>{{ product.name }}</td>
+                                                    <td>{{ quantity }}</td>
+                                                    <td>{{ product.price|number_format(2, ',', ' ') }} €</td>
+                                                    <td>{{ total|number_format(2, ',', ' ') }} €</td>
+                                                </tr>
+                                            {% endfor %}
+                                            <tr class="table-active">
+                                                <td colspan="3"><strong>Total</strong></td>
+                                                <td><strong>{{ totalCommand|number_format(2, ',', ' ') }} €</strong></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <p>Vous n'avez pas encore de commandes.</p>
+                <a href="{{ path('app_home') }}" class="btn btn-success">Découvrir les producteurs</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
