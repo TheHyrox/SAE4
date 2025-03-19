@@ -38,7 +38,7 @@ final class Version20250319093321 extends AbstractMigration
         $this->addSql('ALTER TABLE product ADD CONSTRAINT FK_D34A04AD5887B07F FOREIGN KEY (type_product_id) REFERENCES type_product (id)');
         $this->addSql('ALTER TABLE product ADD CONSTRAINT FK_D34A04ADA76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
         $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649FDEF8996 FOREIGN KEY (profession_id) REFERENCES type_profession (id)');
-        $this->addSql('ALTER TABLE command_product ADD quantity INT NOT NULL');
+        $this->addSql('ALTER TABLE command_product ADD quantity INT DEFAULT 1 NOT NULL');
     }
 
     public function down(Schema $schema): void
