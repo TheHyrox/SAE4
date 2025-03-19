@@ -153,11 +153,11 @@
                     <div class="card-header bg-success text-white">
                         <h4 class="mb-0">Informations du Producteur</h4>
                     </div>
-                    <img src="{{ asset('images/producteur_' ~ producteur.id ~ '.jpg') }}"
-                         class="card-img-top"
-                         alt="Photo de {{ producteur.firstName }} {{ producteur.name }}"
-                         style="height: 250px; object-fit: cover;"
-                         onerror="this.src='{{ asset('images/MainBefore.jpg') }}'">
+                    <img src="{{ asset('images/producteurs/producteur_' ~ producteur.id ~ '.jpg') }}"
+                         class="card-img-top producer-image" alt="Photo de {{ producteur.name }}"
+                         onerror="this.onerror=null;
+                                  this.src='{{ asset('images/producteurs/producteur_' ~ producteur.id ~ '.png') }}';
+                                  this.onerror=function(){this.src='{{ asset('images/producteurs/default.png') }}';}">
                     <div class="card-body">
                         <h5 class="card-title">{{ producteur.firstName }} {{ producteur.name }}</h5>
                         <p class="card-text">

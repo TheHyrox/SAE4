@@ -76,7 +76,7 @@
                             <div class="card-header bg-success text-white text-center">
                                 <h5 class="mb-0">{{ producteur.firstName }} {{ producteur.name }}</h5>
                             </div>
-                            <img src="{{ asset('images/producteur_' ~ producteur.id) }}" class="card-img-top" alt="Photo de {{ producteur.name }}">
+                            <img src="{{ asset('images/producteurs/producteur_' ~ producteur.id ~ '.jpg') }}" class="card-img-top producer-image" alt="Photo de {{ producteur.name }}" onerror="this.onerror=null; this.src='{{ asset('images/producteurs/producteur_' ~ producteur.id ~ '.png') }}'; this.onerror=function(){this.src='{{ asset('images/producteurs/default.png') }}';}">
                             <div class="card-body text-center">
                                 <h6 class="card-title">
                                     {% if producteur.profession is defined and producteur.profession %}

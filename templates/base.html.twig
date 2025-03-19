@@ -41,18 +41,20 @@
                             <form method="post" action="{{ path('app_profile_edit') }}" enctype="multipart/form-data">
                                 <div class="mb-3 text-center">
                                     <div class="position-relative d-inline-block">
-                                        <img src="{{ asset('images/producteur_' ~ app.user.id ~ '.jpg') }}"
-                                             class="rounded-circle img-thumbnail"
-                                             style="width: 150px; height: 150px; object-fit: cover;"
-                                             alt="Photo de profil"
-                                             id="profilePreview"
-                                             onerror="this.src='{{ asset('images/default-user.jpg') }}'">
-                                        <div class="position-absolute bottom-0 end-0 bg-success rounded-circle p-2">
-                                            <label for="profilePhotoInput" class="m-0 cursor-pointer">
+                                        <label for="profilePhotoInput" class="m-0 cursor-pointer" style="cursor: pointer;">
+                                            <img src="{{ asset('images/producteurs/producteur_' ~ app.user.id ~ '.jpg') }}"
+                                                 class="rounded-circle img-thumbnail"
+                                                 style="width: 150px; height: 150px; object-fit: cover;"
+                                                 alt="Photo de profil"
+                                                 id="profilePreview"
+                                                 onerror="this.onerror=null;
+                                                         this.src='{{ asset('images/producteurs/producteur_' ~ app.user.id ~ '.png') }}';
+                                                         this.onerror=function(){this.src='{{ asset('images/producteurs/default.png') }}';}">
+                                            <div class="position-absolute bottom-0 end-0 bg-success rounded-circle p-2">
                                                 <i class="fas fa-camera text-white"></i>
-                                                <input type="file" name="profilePhoto" id="profilePhotoInput" class="d-none" accept="image/*" onchange="previewProfileImage(this)">
-                                            </label>
-                                        </div>
+                                            </div>
+                                        </label>
+                                        <input type="file" name="profilePhoto" id="profilePhotoInput" class="d-none" accept="image/*" onchange="previewProfileImage(this)">
                                     </div>
                                 </div>
 
@@ -116,7 +118,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="button" class="btn btn-success" onclick="document.querySelector('#staticBackdrop form').submit()">Enregistrer</button>
+                        <button type="button" class="btn btn-success" onclick="validateProfileForm()">Enregistrer</button>
                     </div>
                 </div>
             </div>
@@ -271,6 +273,18 @@
 
                 reader.readAsDataURL(input.files[0]);
             }
+        }
+
+        function validateProfileForm() {
+            const currentPasswordField = document.getElementById('currentPassword');
+
+            if (!currentPasswordField || !currentPasswordField.value.trim()) {
+                alert('Veuillez saisir votre mot de passe actuel pour confirmer les modifications.');
+                currentPasswordField.focus();
+                return false;
+            }
+
+            document.querySelector('#staticBackdrop form').submit();
         }
     </script>
 </html>
