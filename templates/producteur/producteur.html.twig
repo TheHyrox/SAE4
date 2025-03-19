@@ -22,7 +22,7 @@
                                                  class="card-img-top"
                                                  alt="{{ product.name }}"
                                                  style="height: 200px; object-fit: cover;"
-                                                 onerror="this.src='{{ asset('images/default-user.jpg') }}'">
+                                                 onerror="this.src='{{ asset('images/producteurs/default.png') }}'">
                                             <div class="card-body">
                                                 <p class="card-text"><strong>Type :</strong> {{ product.typeProduct.name }}</p>
                                                 <p class="card-text"><strong>Prix :</strong> {{ product.price|number_format(2, ',', ' ') }} € 
