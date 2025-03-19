@@ -30,4 +30,13 @@ class UserRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findByRole(string $string)
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.roles LIKE :role')
+            ->setParameter('role', '%"'.$string.'"%')
+            ->getQuery()
+            ->getResult();
+    }
 }

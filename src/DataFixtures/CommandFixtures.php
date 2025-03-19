@@ -37,7 +37,7 @@ class CommandFixtures extends Fixture implements DependentFixtureInterface
         }
 
         // Get all regular users with the ROLE_USER role without the ROLE_ADMIN role and without the findByRole method
-        $customers = $manager->getRepository(User::class)->findBy(['roles' => ['ROLE_USER']]);
+        $customers = $manager->getRepository(User::class)->findByRole('ROLE_USER');
 
         if (empty($customers)) {
             throw new \Exception("No customers found. Make sure UserFixtures has been loaded with ROLE_CLIENT users.");
