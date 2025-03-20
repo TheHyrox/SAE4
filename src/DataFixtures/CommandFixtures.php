@@ -40,7 +40,7 @@ class CommandFixtures extends Fixture implements DependentFixtureInterface
         $customers = $manager->getRepository(User::class)->findByRole('ROLE_USER');
 
         if (empty($customers)) {
-            throw new \Exception("No customers found. Make sure UserFixtures has been loaded with ROLE_CLIENT users.");
+            throw new \Exception("No customers found. Make sure UserFixtures has been loaded with ROLE_USER users.");
         }
 
         // Get status references
