@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Command;
 use App\Entity\Product;
 use App\Entity\TypeStatusCommand;
+use App\Entity\User;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -130,6 +131,24 @@ class CommandController extends AbstractController
         
         return $this->render('command/my_commands.html.twig', [
             'commandsData' => $commandsData
+        ]);
+    }
+
+    #[Route('/commands', name: 'app_commandes')]
+    public function commands(EntityManagerInterface $entityManager): Response
+    {
+        $queryBuilder = $entityManager->createQueryBuilder();
+        $queryBuilder
+            ->select('u')
+            ->from(User::class, 'u')
+            ->where('u.roles LIKE :role AND u.roles NOT LIKE :role2')
+            ->setParameter('role', '%ROLE_PRODUCTEUR%')
+            ->setParameter('role2', '%ROLE_ADMIN%');
+
+        $producteurs = $queryBuilder->getQuery()->getResult();
+
+        return $this->render('home/index.html.twig', [
+            'producteurs' => $producteurs,
         ]);
     }
 }
