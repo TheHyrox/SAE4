@@ -9,14 +9,12 @@
         <div class="mb-3">
             <label for="categories" class="form-label">Profession :</label>
             <select class="form-select form-select-sm" name="categorie" id="categories">
-                <option value="Tout" selected>Tout</option>
-                <option value="Agriculteur">Agriculteur</option>
-                <option value="Vigneron">Vigneron</option>
-                <option value="Maraîcher">Maraîcher</option>
-                <option value="Apiculteur">Apiculteur</option>
-                <option value="Éleveur de volaille">Éleveur de volailles</option>
-                <option value="Viticulteur">Viticulteur</option>
-                <option value="Pépiniériste">Pépiniériste</option>
+                <option value="Tout" {% if filters.categorie == 'Tout' %}selected{% endif %}>Tout</option>
+                {% for profession in professions %}
+                    <option value="{{ profession.id }}" {% if filters.categorie == profession.id %}selected{% endif %}>
+                        {{ profession.name }}
+                    </option>
+                {% endfor %}
             </select>
         </div>
         
@@ -79,14 +77,13 @@
                             <img src="{{ asset('images/producteurs/producteur_' ~ producteur.id ~ '.jpg') }}" class="card-img-top producer-image" alt="Photo de {{ producteur.name }}" onerror="this.onerror=null; this.src='{{ asset('images/producteurs/producteur_' ~ producteur.id ~ '.png') }}'; this.onerror=function(){this.src='{{ asset('images/producteurs/default.png') }}';}">
                             <div class="card-body text-center">
                                 <h6 class="card-title">
-                                    {% if producteur.profession is defined and producteur.profession %}
+                                    {% if producteur.profession %}
                                         {{ producteur.profession.name }}
-                                    {% elseif producteur.typeProfession is defined and producteur.typeProfession %}
-                                        {{ producteur.typeProfession.name }}
                                     {% else %}
                                         Profession non définie
                                     {% endif %}
-                                </h6>                              <p class="card-text">
+                                </h6>
+                                <p class="card-text">
                                     <h6>{{ producteur.address }}</h6>
                                 </p>
                             </div>
